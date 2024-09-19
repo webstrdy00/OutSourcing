@@ -31,7 +31,7 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
-
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    private List<Restaurant> restaurantList = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+//    private List<Restaurant> restaurantList = new ArrayList<>();
 }
