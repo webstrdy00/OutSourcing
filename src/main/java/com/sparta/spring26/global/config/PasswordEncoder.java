@@ -1,4 +1,4 @@
-package com.sparta.spring26.config;
+package com.sparta.spring26.global.config;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
