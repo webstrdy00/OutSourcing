@@ -23,8 +23,8 @@ public class Menu extends BaseTimeEntity {
     @Column(nullable = false)
     private Boolean popularity;
 
-    @Column(nullable = false, length = 100)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private MenuStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
