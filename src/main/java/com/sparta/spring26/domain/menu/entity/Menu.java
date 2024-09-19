@@ -3,9 +3,11 @@ package com.sparta.spring26.domain.menu.entity;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "menus")
+@NoArgsConstructor
 public class Menu extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +26,25 @@ public class Menu extends BaseTimeEntity {
     private Boolean popularity;
 
     @Enumerated(EnumType.STRING)
-    private MenuStatus status;
+    @Column(nullable = false)
+    private MenuStatus status = MenuStatus.AVAILABLE;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    public Menu(Restaurant restaurant, String name, Integer price, String category) {
+        this.restaurant = restaurant;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+    }
+
+    public void update(String name, Integer price, String category, boolean popularity, MenuStatus status) {
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.popularity = popularity;
+        this.status = status;
+    }
 }

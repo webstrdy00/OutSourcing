@@ -4,10 +4,12 @@ import com.sparta.spring26.domain.menu.entity.Menu;
 import com.sparta.spring26.domain.order.entity.Order;
 import com.sparta.spring26.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 @Table(name = "restaurants")
 public class Restaurant {
