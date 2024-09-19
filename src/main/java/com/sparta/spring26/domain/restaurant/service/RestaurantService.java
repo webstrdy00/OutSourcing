@@ -3,11 +3,14 @@ package com.sparta.spring26.domain.restaurant.service;
 import com.sparta.spring26.domain.restaurant.dto.request.RestaurantRequestDto;
 import com.sparta.spring26.domain.restaurant.dto.request.RestaurantUpdateDto;
 import com.sparta.spring26.domain.restaurant.dto.response.RestaurantResponseDto;
+import com.sparta.spring26.domain.restaurant.dto.response.RestaurantResponseListDto;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.domain.restaurant.repository.RestaurantRepository;
 import com.sparta.spring26.global.exception.CustomException;
 import com.sparta.spring26.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,5 +51,26 @@ public class RestaurantService {
         restaurant.updatePartial(updateDto);
 
         return RestaurantResponseDto.fromEntity(restaurant);
+    }
+    
+    // 가게 단건 조회
+    @Transactional(readOnly = true)
+    public RestaurantResponseDto getRestaurant(Long restaurantsId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantsId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
+
+        return RestaurantResponseDto.fromEntity(restaurant);
+    }
+    
+    // 가게 목록 조회
+    public Page<RestaurantResponseListDto> getRestaurantList(String name, Pageable pageable) {
+        Page<Restaurant> restaurantPage;
+        if (name != null && !name.isEmpty()){
+            restaurantPage = restaurantRepository.findByNameContainingIgnoreCase(name, pageable);
+        }else {
+            restaurantPage = restaurantRepository.findAll(pageable);
+        }
+
+        return restaurantPage.map(RestaurantResponseListDto::fromEntity);
     }
 }

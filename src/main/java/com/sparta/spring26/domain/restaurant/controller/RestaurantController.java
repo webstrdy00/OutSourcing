@@ -2,12 +2,17 @@ package com.sparta.spring26.domain.restaurant.controller;
 
 import com.sparta.spring26.domain.restaurant.dto.request.RestaurantRequestDto;
 import com.sparta.spring26.domain.restaurant.dto.request.RestaurantUpdateDto;
+import com.sparta.spring26.domain.restaurant.dto.response.PagedResponseDto;
 import com.sparta.spring26.domain.restaurant.dto.response.RestaurantResponseDto;
+import com.sparta.spring26.domain.restaurant.dto.response.RestaurantResponseListDto;
 import com.sparta.spring26.domain.restaurant.service.RestaurantService;
 import com.sparta.spring26.domain.user.entity.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -47,5 +52,32 @@ public class RestaurantController {
 //        Long userId = (Long) request.getAttribute("userId");      // 필터 구현시 주석 해제
         RestaurantResponseDto updateRestaurant = restaurantService.updateRestaurantPartial(restaurantsId, updateDto);
         return ResponseEntity.ok(updateRestaurant);
+    }
+
+    /**
+     * 가게 단건 조회
+     * @param restaurantsId
+     * @return 상태 코드 200, 가게 정보
+     */
+    @GetMapping("{restaurantsId}")
+    public ResponseEntity<RestaurantResponseDto> getRestaurant(@PathVariable Long restaurantsId){
+        RestaurantResponseDto restaurant = restaurantService.getRestaurant(restaurantsId);
+        return ResponseEntity.ok(restaurant);
+    }
+
+    /**
+     * 가게 목록 조회
+     * @param name
+     * @param page
+     * @param size
+     * @return 상태 코드 200, 가게 정보들
+     */
+    @GetMapping
+    public ResponseEntity<PagedResponseDto<RestaurantResponseListDto>> getRestaurantList(@RequestParam(required = false) String name,
+                                                                                         @RequestParam(defaultValue = "0")int page,
+                                                                                         @RequestParam(defaultValue = "10")int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RestaurantResponseListDto> restaurantPage = restaurantService.getRestaurantList(name, pageable);
+        return ResponseEntity.ok(new PagedResponseDto<>(restaurantPage));
     }
 }
