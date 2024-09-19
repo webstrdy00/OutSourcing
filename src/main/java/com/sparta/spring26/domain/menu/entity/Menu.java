@@ -49,4 +49,8 @@ public class Menu extends BaseTimeEntity {
         this.popularity = popularity;
         this.status = status;
     }
+
+    public void delete() {
+        this.status = MenuStatus.DELETE;
+    }
 }

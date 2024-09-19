@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 public enum MenuStatus {
     AVAILABLE,
-    SOLD_OUT;
+    SOLD_OUT,
+    DELETE;
 
     public static MenuStatus of(String status) {
         return Arrays.stream(MenuStatus.values())

@@ -52,8 +52,8 @@ public class MenuController {
         menuService.updateMenu(user, restaurantId, id, request.getName(), request.getCategory(), request.getPrice(), request.getPopularity(), MenuStatus.of(request.getStatus().toUpperCase()));
 
         return ApiResponse.success(
-                HttpStatus.OK.getReasonPhrase(),
-                HttpStatus.OK.value(),
+                HttpStatus.NO_CONTENT.getReasonPhrase(),
+                HttpStatus.NO_CONTENT.value(),
                 null
         );
     }
@@ -77,18 +77,21 @@ public class MenuController {
         );
     }
 
-
     /**
-     * 메뉴 단건 조회
+     * 메뉴 삭제
      */
-    @GetMapping("/{id}")
-    public ApiResponse<GetMenuResponseDto> getmenu(@PathVariable Long restaurantId, @PathVariable Long id){
-        Menu menu = menuService.getMenu(restaurantId, id);
+    @DeleteMapping("/{id}")
+//    public ApiResponse<Void> deleteMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @PathVariable Long id){
+//        User user = userDetails.getUser();
+    public ApiResponse<Void> deleteMenu(@PathVariable Long restaurantId, @PathVariable Long id){
+        User user = new User();
+
+        menuService.deleteMenu(user, restaurantId, id);
 
         return ApiResponse.success(
-                HttpStatus.OK.getReasonPhrase(),
-                HttpStatus.OK.value(),
-                new GetMenuResponseDto(menu)
+                HttpStatus.NO_CONTENT.getReasonPhrase(),
+                HttpStatus.NO_CONTENT.value(),
+                null
         );
     }
 }
