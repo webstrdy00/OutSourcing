@@ -3,8 +3,10 @@ package com.sparta.spring26.domain.menu.entity;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "menus")
 @NoArgsConstructor

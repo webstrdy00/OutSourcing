@@ -1,7 +1,9 @@
 package com.sparta.spring26.domain.menu.controller;
 
 import com.sparta.spring26.domain.menu.dto.CreateMenuRequestDto;
+import com.sparta.spring26.domain.menu.dto.GetMenuResponseDto;
 import com.sparta.spring26.domain.menu.dto.UpdateMenuRequestDto;
+import com.sparta.spring26.domain.menu.entity.Menu;
 import com.sparta.spring26.domain.menu.entity.MenuStatus;
 import com.sparta.spring26.domain.menu.service.MenuService;
 import com.sparta.spring26.domain.user.entity.User;
@@ -10,6 +12,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,7 +43,7 @@ public class MenuController {
     /**
      * 메뉴 수정
      */
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
 //    public ApiResponse<Void> updateMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @PathVariable Long id, @Valid @RequestBody UpdateMenuRequestDto request){
 //        User user = userDetails.getUser();
     public ApiResponse<Void> updateMenu(@PathVariable Long restaurantId, @PathVariable Long id, @Valid @RequestBody UpdateMenuRequestDto request){
@@ -56,13 +61,34 @@ public class MenuController {
     /**
      * 메뉴 다건 조회
      */
+    @GetMapping
+    public ApiResponse<List<GetMenuResponseDto>> getmenus(@PathVariable Long restaurantId){
+        List<Menu> menuList = menuService.getMenus(restaurantId);
+
+        List<GetMenuResponseDto> menuResponseDtoList = new ArrayList<>();
+        for (Menu menu : menuList) {
+            menuResponseDtoList.add(new GetMenuResponseDto(menu));
+        }
+
+        return ApiResponse.success(
+                HttpStatus.OK.getReasonPhrase(),
+                HttpStatus.OK.value(),
+                menuResponseDtoList
+        );
+    }
+
 
     /**
      * 메뉴 단건 조회
      */
+    @GetMapping("/{id}")
+    public ApiResponse<GetMenuResponseDto> getmenu(@PathVariable Long restaurantId, @PathVariable Long id){
+        Menu menu = menuService.getMenu(restaurantId, id);
 
-    /**
-     * 메뉴 삭제새
-     */
-
+        return ApiResponse.success(
+                HttpStatus.OK.getReasonPhrase(),
+                HttpStatus.OK.value(),
+                new GetMenuResponseDto(menu)
+        );
+    }
 }

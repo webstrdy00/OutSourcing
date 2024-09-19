@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -23,6 +24,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final RestaurantRepository restaurantRepository;
 
+    @Transactional
     public void createMenu(User user, Long restaurantId, String name, String category, Integer price) {
         // restaurantId 검증
         Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() ->
@@ -37,6 +39,7 @@ public class MenuService {
         menuRepository.save(new Menu(restaurant, name, price, category));
     }
 
+    @Transactional
     public void updateMenu(
             User user,
             Long restaurantId,
@@ -63,4 +66,29 @@ public class MenuService {
     }
 
 
+    public List<Menu> getMenus(Long restaurantId) {
+        restaurantRepository.findById(restaurantId).orElseThrow(() ->
+                new IllegalArgumentException("Restaurant not found"));
+
+        List<Menu> menuList = menuRepository.findByRestaurantId(restaurantId);
+
+        return menuList;
+    }
+
+    public Menu getMenu(Long restaurantId, Long id) {
+        // restaurantId 검증
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(() ->
+                new IllegalArgumentException("Restaurant not found"));
+
+        // id값 검증
+        Menu menu = menuRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("Menu not found"));
+
+        // restaurant의 menu인지 검증
+        if(!menu.getRestaurant().equals(restaurant)) {
+            new IllegalArgumentException("Restaurant is not the owner of the menu");
+        }
+
+        return menu;
+    }
 }
