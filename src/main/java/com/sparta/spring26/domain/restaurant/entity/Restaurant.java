@@ -2,13 +2,21 @@ package com.sparta.spring26.domain.restaurant.entity;
 
 import com.sparta.spring26.domain.menu.entity.Menu;
 import com.sparta.spring26.domain.order.entity.Order;
+import com.sparta.spring26.domain.restaurant.dto.request.RestaurantRequestDto;
+import com.sparta.spring26.domain.restaurant.dto.request.RestaurantUpdateDto;
+import com.sparta.spring26.domain.restaurant.enums.RestaurantStatus;
 import com.sparta.spring26.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@NoArgsConstructor
 @Entity
 @Getter
 @Table(name = "restaurants")
@@ -26,11 +34,15 @@ public class Restaurant {
     @Column(nullable = false)
     private Integer minDeliveryPrice;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private RestaurantStatus status;
 
-    @Column(nullable = false, length = 55)
-    private String operationHours;
+    @Column(nullable = false)
+    private LocalTime openTime;
+
+    @Column(nullable = false)
+    private LocalTime closeTime;
 
     @Column(nullable = false)
     private String address;
@@ -45,4 +57,39 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menuList = new ArrayList<>();
 
+    public Restaurant(RestaurantRequestDto requestDto, User user){
+        this.name = requestDto.getName();
+        this.description = requestDto.getDescription();
+        this.minDeliveryPrice = requestDto.getMinDeliveryPrice();
+        this.openTime = requestDto.getOpenTime();
+        this.closeTime = requestDto.getCloseTime();
+        this.address = requestDto.getAddress();
+        this.owner = user;
+        this.status = RestaurantStatus.OPEN;
+    }
+
+    public void updatePartial(RestaurantUpdateDto updateDto) {
+        if (updateDto.getName() != null) {
+            this.name = updateDto.getName();
+        }
+        if (updateDto.getDescription() != null) {
+            this.description = updateDto.getDescription();
+        }
+        if (updateDto.getOpenTime() != null) {
+            this.openTime = updateDto.getOpenTime();
+        }
+        if (updateDto.getCloseTime() != null) {
+            this.closeTime = updateDto.getCloseTime();
+        }
+        if (updateDto.getMinDeliveryPrice() != null) {
+            this.minDeliveryPrice = updateDto.getMinDeliveryPrice();
+        }
+        if (updateDto.getAddress() != null) {
+            this.address = updateDto.getAddress();
+        }
+    }
+
+    public void close() {
+        this.status = RestaurantStatus.CLOSED;
+    }
 }
