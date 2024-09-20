@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/delivery/restaurants/{restaurantId}/menus")
+@RequestMapping("/restaurants/{restaurantId}/menus")
 public class MenuController {
     private final MenuService menuService;
 
