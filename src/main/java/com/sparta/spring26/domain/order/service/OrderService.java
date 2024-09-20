@@ -5,8 +5,8 @@ import com.sparta.spring26.domain.order.dto.request.OrderCreateRequestDto;
 import com.sparta.spring26.domain.order.dto.response.OrderResponseDto;
 import com.sparta.spring26.domain.order.entity.Order;
 import com.sparta.spring26.domain.order.repository.OrderRepository;
-import com.sparta.spring26.domain.restaurant.RestaurantRepository;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
+import com.sparta.spring26.domain.restaurant.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +32,9 @@ public class OrderService {
                     String.format("최소 주문 금액은 %d원입니다.", restaurant.getMinDeliveryPrice()));
         }
 
-        if (!isRestaurantOpen(restaurant.getOperationHours())){
-            throw new IllegalArgumentException("가게 운영 시간이 아닙니다.");
-        }
+//        if (!isRestaurantOpen(restaurant.getOperationHours())){
+//            throw new IllegalArgumentException("가게 운영 시간이 아닙니다.");
+//        }
 
         // 초기 상태는 접수 중
         Order order = new Order();

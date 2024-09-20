@@ -13,7 +13,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/outsourcing
     username: root
-    password: ${db_password}
+    password: 12345
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
