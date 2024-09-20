@@ -1,7 +1,6 @@
 package com.sparta.spring26.domain.order.dto.request;
 
 import lombok.Getter;
-import lombok.Setter;
 
 //import javax.validation.constraints.Min;
 //import javax.validation.constraints.NotNull;

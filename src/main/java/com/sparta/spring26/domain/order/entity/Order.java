@@ -1,5 +1,6 @@
 package com.sparta.spring26.domain.order.entity;
 
+import com.sparta.spring26.domain.menu.entity.Menu;
 import com.sparta.spring26.domain.order.OrderStatus;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.domain.user.entity.User;
@@ -30,4 +31,8 @@ public class Order extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id", nullable = false)
+    private Menu menu;
 }

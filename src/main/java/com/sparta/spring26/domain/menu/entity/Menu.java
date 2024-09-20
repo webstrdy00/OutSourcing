@@ -3,8 +3,10 @@ package com.sparta.spring26.domain.menu.entity;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "menus")
 public class Menu extends BaseTimeEntity {
     @Id
