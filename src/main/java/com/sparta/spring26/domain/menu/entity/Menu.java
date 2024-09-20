@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@Getter
 @Table(name = "menus")
 @NoArgsConstructor
 public class Menu extends BaseTimeEntity {

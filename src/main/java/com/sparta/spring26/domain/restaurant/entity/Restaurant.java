@@ -18,6 +18,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Entity
+@Getter
 @Table(name = "restaurants")
 public class Restaurant {
     @Id
