@@ -8,7 +8,6 @@ import com.sparta.spring26.domain.order.repository.OrderRepository;
 import com.sparta.spring26.domain.restaurant.RestaurantRepository;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -18,10 +17,8 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class OrderService {
 
-    @Autowired
     private final OrderRepository orderRepository;
 
-    @Autowired
     private final RestaurantRepository restaurantRepository;
 
     public OrderResponseDto createOrder(OrderCreateRequestDto orderCreateRequestDto){
