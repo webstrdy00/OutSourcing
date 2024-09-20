@@ -37,9 +37,10 @@ public class Restaurant {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "restaurant_id", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> ordersList = new ArrayList<>();
 
     @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menuList = new ArrayList<>();
+
 }
