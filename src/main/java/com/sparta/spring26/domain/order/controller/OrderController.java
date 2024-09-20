@@ -6,6 +6,7 @@ import com.sparta.spring26.domain.order.dto.response.OrderResponseDto;
 import com.sparta.spring26.domain.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class OrderController {
 
+    @Autowired
     private final OrderService orderService;
 
     @PostMapping
