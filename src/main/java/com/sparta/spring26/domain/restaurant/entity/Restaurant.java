@@ -4,6 +4,7 @@ import com.sparta.spring26.domain.menu.entity.Menu;
 import com.sparta.spring26.domain.order.entity.Order;
 import com.sparta.spring26.domain.restaurant.dto.request.RestaurantRequestDto;
 import com.sparta.spring26.domain.restaurant.dto.request.RestaurantUpdateDto;
+import com.sparta.spring26.domain.restaurant.enums.RestaurantStatus;
 import com.sparta.spring26.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -31,8 +32,9 @@ public class Restaurant {
     @Column(nullable = false)
     private Integer minDeliveryPrice;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private RestaurantStatus status;
 
     @Column(nullable = false)
     private LocalTime openTime;
@@ -43,9 +45,9 @@ public class Restaurant {
     @Column(nullable = false)
     private String address;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "owner_id", nullable = false)
-//    private User owner;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> ordersList = new ArrayList<>();
@@ -53,15 +55,15 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menuList = new ArrayList<>();
 
-    public Restaurant(RestaurantRequestDto requestDto/**, User user**/){
+    public Restaurant(RestaurantRequestDto requestDto, User user){
         this.name = requestDto.getName();
         this.description = requestDto.getDescription();
         this.minDeliveryPrice = requestDto.getMinDeliveryPrice();
         this.openTime = requestDto.getOpenTime();
         this.closeTime = requestDto.getCloseTime();
         this.address = requestDto.getAddress();
-//        this.owner = user;
-        this.status = "open";
+        this.owner = user;
+        this.status = RestaurantStatus.OPEN;
     }
 
     public void updatePartial(RestaurantUpdateDto updateDto) {
@@ -83,5 +85,9 @@ public class Restaurant {
         if (updateDto.getAddress() != null) {
             this.address = updateDto.getAddress();
         }
+    }
+
+    public void close() {
+        this.status = RestaurantStatus.CLOSED;
     }
 }

@@ -6,7 +6,9 @@ import com.sparta.spring26.domain.restaurant.dto.response.PagedResponseDto;
 import com.sparta.spring26.domain.restaurant.dto.response.RestaurantResponseDto;
 import com.sparta.spring26.domain.restaurant.dto.response.RestaurantResponseListDto;
 import com.sparta.spring26.domain.restaurant.service.RestaurantService;
+import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.global.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,14 +31,14 @@ public class RestaurantController {
     /**
      * 가게 생성 코드
      * @param requestDto
-     * @param request
+     * @param userDetails
      * @return RestaurantResponseDto, 상태코드 201
      */
-//    @Secured(UserRole.Authority.OWNER)   // 사장 권한만 접근 가능( Security 구현시 주석해제)
+    @Secured(UserRole.Authority.OWNER)   // 사장 권한만 접근 가능
     @PostMapping
-    public ResponseEntity<RestaurantResponseDto> createRestaurant(@Valid @RequestBody RestaurantRequestDto requestDto, HttpServletRequest request){
-//        Long userId = (Long) request.getAttribute("userId");      // 필터 구현시 주석 해제
-        RestaurantResponseDto createRestaurant = restaurantService.createRestaurant(requestDto);
+    public ResponseEntity<RestaurantResponseDto> createRestaurant(@Valid @RequestBody RestaurantRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails, BindingResult bindingResult){
+        User user = userDetails.getUser();
+        RestaurantResponseDto createRestaurant = restaurantService.createRestaurant(requestDto, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createRestaurant);
     }
 
@@ -43,14 +46,14 @@ public class RestaurantController {
      * 가게 정보 수정 코드
      * @param restaurantsId
      * @param updateDto
-     * @param request
+     * @param userDetails
      * @return RestaurantResponseDto, 상태코드 200
      */
-//    @Secured(UserRole.Authority.OWNER)   // 사장 권한만 접근 가능( Security 구현시 주석해제)
-    @PatchMapping ("/{restaurantsId}")
-    public ResponseEntity<RestaurantResponseDto> updateRestaurantPartial(@PathVariable Long restaurantsId, @RequestBody RestaurantUpdateDto updateDto, HttpServletRequest request){
-//        Long userId = (Long) request.getAttribute("userId");      // 필터 구현시 주석 해제
-        RestaurantResponseDto updateRestaurant = restaurantService.updateRestaurantPartial(restaurantsId, updateDto);
+    @Secured(UserRole.Authority.OWNER)   // 사장 권한만 접근 가능
+    @DeleteMapping("/{restaurantsId}")
+    public ResponseEntity<RestaurantResponseDto> updateRestaurantPartial(@PathVariable Long restaurantsId, @RequestBody RestaurantUpdateDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        User user = userDetails.getUser();
+        RestaurantResponseDto updateRestaurant = restaurantService.updateRestaurantPartial(restaurantsId, updateDto, user);
         return ResponseEntity.ok(updateRestaurant);
     }
 
@@ -79,5 +82,19 @@ public class RestaurantController {
         Pageable pageable = PageRequest.of(page, size);
         Page<RestaurantResponseListDto> restaurantPage = restaurantService.getRestaurantList(name, pageable);
         return ResponseEntity.ok(new PagedResponseDto<>(restaurantPage));
+    }
+
+    /**
+     * 가게 폐업
+     * @param restaurantsId
+     * @param userDetails
+     * @return
+     */
+    @Secured(UserRole.Authority.OWNER)   // 사장 권한만 접근 가능
+    @PatchMapping("/{restaurantsId}/close")
+    public ResponseEntity<Void> closeRestaurant(@PathVariable Long restaurantsId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        User user = userDetails.getUser();
+        restaurantService.closeRestaurant(restaurantsId, user);
+        return ResponseEntity.ok().build();
     }
 }
