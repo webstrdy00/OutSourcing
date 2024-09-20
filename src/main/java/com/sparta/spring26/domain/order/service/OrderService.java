@@ -1,10 +1,10 @@
 package com.sparta.spring26.domain.order.service;
 
+import com.sparta.spring26.domain.order.OrderStatus;
 import com.sparta.spring26.domain.order.dto.request.OrderCreateRequestDto;
 import com.sparta.spring26.domain.order.dto.response.OrderResponseDto;
-import com.sparta.spring26.domain.order.repository.OrderRepository;
-import com.sparta.spring26.domain.order.OrderStatus;
 import com.sparta.spring26.domain.order.entity.Order;
+import com.sparta.spring26.domain.order.repository.OrderRepository;
 import com.sparta.spring26.domain.restaurant.RestaurantRepository;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class OrderService {
 
         if(orderCreateRequestDto.getTotalPrice() < restaurant.getMinDeliveryPrice()) {
             throw new IllegalArgumentException(
-                    String.format("최소 주문 급액은 %원입니다." + restaurant.getMinDeliveryPrice() + "원입니다"));
+                    String.format("최소 주문 금액은 %d원입니다.", restaurant.getMinDeliveryPrice()));
         }
 
         if (!isRestaurantOpen(restaurant.getOperationHours())){
@@ -53,37 +53,45 @@ public class OrderService {
                 restaurant.getId(),
                 restaurant.getName(),
                 savedOrder.getTotalPrice(),
-                savedOrder.getAddress(),
+                restaurant.getAddress(),
                 savedOrder.getStatus()
         );
     }
+
+    public OrderResponseDto updateOrderStatus(Long orderId, OrderStatus newStatus){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+
+        if (order.getMenu() == null){
+            throw new IllegalArgumentException("주문에 메뉴 정보가 없습니다.");
+        }
+
+        order.setStatus(newStatus);
+        Order updatedOrder = orderRepository.save(order);
+
+        return new OrderResponseDto(
+                updatedOrder.getId(),
+                updatedOrder.getMenu().getId(),
+                updatedOrder.getRestaurant().getId(),
+                updatedOrder.getRestaurant().getName(),
+                updatedOrder.getTotalPrice(),
+                updatedOrder.getRestaurant().getAddress(),
+                updatedOrder.getStatus()
+        );
+    }
+
+    private boolean isRestaurantOpen(String operationHours) {
+        // 가게 운영 시간 체크 (가게마다 오픈/마감 시간 정보를 기반으로 확인)
+        String[] hours = operationHours.split("-");
+        LocalTime openTime = LocalTime.parse(hours[0], DateTimeFormatter.ofPattern("HH:mm"));
+        LocalTime closeTime = LocalTime.parse(hours[1], DateTimeFormatter.ofPattern("HH:mm"));
+        LocalTime currentTime = LocalTime.now();
+
+        return currentTime.isAfter(openTime) && currentTime.isBefore(closeTime);
+    }
 }
 
-public OrderResponseDto updateOrderStatus(Long orderId, OrderStatus newStatus){
-    Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
 
-    order.setStatus(newStatus);
-    Order updatedOrder = orderRepository.save(order);
 
-    return new OrderResponseDto(
-            updatedOrder.getId(),
-            updatedOrder.getMenu().getId(),
-            updatedOrder.getRestaurant().getId(),
-            updatedOrder.getRestaurant().getName(),
-            updatedOrder.getTotalPrice(),
-            updatedOrder.getRestaurant().getAddress(),
-            updatedOrder.getStatus()
-    );
-}
 
-private boolean isRestaurantOpen(String operationHours) {
-    // 가게 운영 시간 체크 (가게마다 오픈/마감 시간 정보를 기반으로 확인)
-    String[] hours = operationHours.split("-");
-    LocalTime openTime = LocalTime.parse(hours[0], DateTimeFormatter.ofPattern("HH:mm"));
-    LocalTime closeTime = LocalTime.parse(hours[1], DateTimeFormatter.ofPattern("HH:mm"));
-    LocalTime currentTime = LocalTime.now();
 
-    return currentTime.isAfter(openTime) && currentTime.isBefore(closeTime);
-}
-}
