@@ -3,6 +3,7 @@ package com.sparta.spring26.domain.order.controller;
 import com.sparta.spring26.domain.order.dto.request.OrderCreateRequestDto;
 import com.sparta.spring26.domain.order.dto.request.OrderStatusUpdateRequestDto;
 import com.sparta.spring26.domain.order.dto.response.OrderResponseDto;
+import com.sparta.spring26.domain.order.repository.OrderRepository;
 import com.sparta.spring26.domain.order.service.OrderService;
 import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.global.security.UserDetailsImpl;
@@ -14,13 +15,16 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/delivery/order")
 @RequiredArgsConstructor
 public class OrderController {
 
-    @Autowired
+
     private final OrderService orderService;
+
 
     // 주문 등록
     @PostMapping
@@ -46,9 +50,31 @@ public class OrderController {
     public ResponseEntity<?> updateOrderStatus(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long orderId,
-            @Valid @RequestParam OrderStatusUpdateRequestDto statusUpdateRequestDto) {
+            @Valid @RequestBody OrderStatusUpdateRequestDto statusUpdateRequestDto) {
         User user = userDetails.getUser();
         OrderResponseDto responseDto = orderService.updateOrderStatus(user, orderId, statusUpdateRequestDto.getNewStatus());
         return ResponseEntity.ok(responseDto);
     }
+
+    // 주문 상세 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponseDto> getOrder(@PathVariable Long orderId) {
+        OrderResponseDto orderResponseDto = orderService.getOrder(orderId);
+        return ResponseEntity.ok(orderResponseDto);
+    }
+
+    // 주문 리스트 조회
+    @GetMapping
+    public ResponseEntity<List<OrderResponseDto>> getOrderList() {
+        List<OrderResponseDto> orderList = orderService.getOrderList();
+        return ResponseEntity.ok(orderList);
+    }
+
+    // 주문 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

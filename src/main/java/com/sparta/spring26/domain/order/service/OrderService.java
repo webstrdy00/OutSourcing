@@ -1,6 +1,7 @@
 package com.sparta.spring26.domain.order.service;
 
 import com.sparta.spring26.domain.order.OrderStatus;
+import com.sparta.spring26.domain.order.controller.OrderController;
 import com.sparta.spring26.domain.order.dto.request.OrderCreateRequestDto;
 import com.sparta.spring26.domain.order.dto.response.OrderResponseDto;
 import com.sparta.spring26.domain.order.entity.Order;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -79,6 +82,43 @@ public class OrderService {
                 updatedOrder.getRestaurant().getAddress(),
                 updatedOrder.getStatus()
         );
+    }
+
+    // 주문 상세 조회
+    public OrderResponseDto getOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+        return new OrderResponseDto(
+                order.getId(),
+                order.getMenu().getId(),
+                order.getRestaurant().getId(),
+                order.getRestaurant().getName(),
+                order.getTotalPrice(),
+                order.getRestaurant().getAddress(),
+                order.getStatus()
+        );
+    }
+
+    // 모든 주문 리스트 조회
+    public List<OrderResponseDto> getOrderList() {
+        List<Order> orderList = orderRepository.findAll();
+        return orderList.stream().map(order -> new OrderResponseDto(
+                order.getId(),
+                order.getMenu().getId(),
+                order.getRestaurant().getId(),
+                order.getRestaurant().getName(),
+                order.getTotalPrice(),
+                order.getRestaurant().getAddress(),
+                order.getStatus()
+        )).collect(Collectors.toList());
+    }
+
+    // 주문 삭제
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+        orderRepository.delete(order);
     }
 
     private boolean isRestaurantOpen(LocalTime openTime, LocalTime closeTime) {

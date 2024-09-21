@@ -7,7 +7,8 @@ public enum OrderStatus {
     COOKING(OrderStatus.Status.COOKING), // 조리 중
     COOKING_COMPLETED(OrderStatus.Status.COOKING_COMPLETED), // 조리 완료
     OUT_FOR_DELIVERY(OrderStatus.Status.OUT_FOR_DELIVERY), // 배달 중
-    DELIVERYED(OrderStatus.Status.DELIVERYED); // 배달 완료
+    DELIVERYED(OrderStatus.Status.DELIVERYED), // 배달 완료
+    CANCELLED(OrderStatus.Status.CANCELLED);
 
 
     private final String status;
@@ -27,6 +28,10 @@ public enum OrderStatus {
         public static final String COOKING_COMPLETED = "COOKING_COMPLETED";
         public static final String OUT_FOR_DELIVERY = "OUT_FOR_DELIVERY";
         public static final String DELIVERYED = "DELIVERYED";
+        public static final String CANCELLED = "CANCELLED";
     }
 
+    public boolean canReview() {
+        return this == DELIVERYED; // 리뷰는 배달 완료 상태에서만 가능
+    }
 }
