@@ -1,15 +1,18 @@
 package com.sparta.spring26.domain.order.service;
 
 import com.sparta.spring26.domain.order.OrderStatus;
-import com.sparta.spring26.domain.order.controller.OrderController;
 import com.sparta.spring26.domain.order.dto.request.OrderCreateRequestDto;
 import com.sparta.spring26.domain.order.dto.response.OrderResponseDto;
 import com.sparta.spring26.domain.order.entity.Order;
+import com.sparta.spring26.domain.order.event.OrderCreatedEvent;
 import com.sparta.spring26.domain.order.repository.OrderRepository;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.domain.restaurant.repository.RestaurantRepository;
 import com.sparta.spring26.domain.user.entity.User;
+import com.sparta.spring26.global.exception.ErrorCode;
+import com.sparta.spring26.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,13 +27,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     private final RestaurantRepository restaurantRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public OrderResponseDto createOrder(User user, OrderCreateRequestDto orderCreateRequestDto){
 
         // 최소 주문 금액과 가게 오픈 시간 체크
         Restaurant restaurant = restaurantRepository.findById(orderCreateRequestDto.getRestaurantId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 레스토랑을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.RESTAURANT_NOT_FOUND.getMessage()));
 
         if(orderCreateRequestDto.getTotalPrice() < restaurant.getMinDeliveryPrice()) {
             throw new IllegalArgumentException(
@@ -39,7 +43,7 @@ public class OrderService {
 
         // 가게 운영 시간 체크
         if (!isRestaurantOpen(restaurant.getOpenTime(), restaurant.getCloseTime())){
-            throw new IllegalArgumentException("가게 운영 시간이 아닙니다.");
+            throw new IllegalArgumentException(ErrorCode.MAX_RESTAURANT_LIMIT.getMessage());
         }
 
         // 초기 상태는 접수 중
@@ -49,6 +53,9 @@ public class OrderService {
         order.setStatus(OrderStatus.ORDER_ACCEPTED);
 
         Order savedOrder = orderRepository.save(order);
+
+        // 주문 생성 이벤트 발행
+        eventPublisher.publishEvent(new OrderCreatedEvent(savedOrder));
 
         return new OrderResponseDto(
                 savedOrder.getId(),
@@ -64,10 +71,10 @@ public class OrderService {
     @Transactional
     public OrderResponseDto updateOrderStatus(User user, Long orderId, OrderStatus newStatus){
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
 
         if (order.getMenu() == null){
-            throw new IllegalArgumentException("주문에 메뉴 정보가 없습니다.");
+            throw new IllegalArgumentException(ExceptionCode.MENU_NOT_FOUND.getMessage());
         }
 
         order.setStatus(newStatus);
@@ -87,7 +94,7 @@ public class OrderService {
     // 주문 상세 조회
     public OrderResponseDto getOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
         return new OrderResponseDto(
                 order.getId(),
                 order.getMenu().getId(),
@@ -117,11 +124,11 @@ public class OrderService {
     @Transactional
     public void deleteOrder(Long orderId, User user) {
         Order order = orderRepository.findByIdAndUserId(orderId, user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
 
         // 주문 상태가 "주문 중"인지 확인
         if (!order.getStatus().equals(OrderStatus.ORDER_ACCEPTED)) {
-            throw new IllegalArgumentException("주문은 '주문 중' 상태일 때만 삭제할 수 있습니다.");
+            throw new IllegalArgumentException(ErrorCode.ORDER_NOT_CANCELLABLE.getMessage());
         }
 
         order.setStatus(OrderStatus.CANCELLED);

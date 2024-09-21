@@ -7,6 +7,7 @@ import com.sparta.spring26.domain.review.dto.response.ReviewResponseDto;
 import com.sparta.spring26.domain.review.entity.Review;
 import com.sparta.spring26.domain.review.repository.ReviewRepository;
 import com.sparta.spring26.domain.user.entity.User;
+import com.sparta.spring26.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,16 +27,16 @@ public class ReviewService {
 
         // Order에서 리뷰를 작성할 수 있는 자격 확인
         Order order = orderRepository.findByUserIdAndMenuId(userId, requestDto.getMenuId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 메뉴에 대한 주문 기록이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.ORDER_RECORD_NOT_FOUND.getMessage()));
 
         // 주문 상태 체크
         if (!order.getStatus().canReview()) {
-            throw new IllegalArgumentException("리뷰는 배달 완료 상태에서만 작성할 수 있습니다.");
+            throw new IllegalArgumentException(ErrorCode.REVIEW_CANNOT_BE_CREATED.getMessage());
         }
 
         // 주문한 사용자와 현재 로그인한 사용자가 동일한지 확인
         if (!order.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("해당 주문에 대한 권한이 없습니다.");
+            throw new IllegalArgumentException(ErrorCode.REVIEW_PERMISSION_DENIED.getMessage());
         }
 
 
@@ -64,11 +65,11 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDto updateReview(Long userId, Long reviewId, ReviewRequestDto requestDto) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.REVIEW_NOT_FOUND.getMessage()));
 
         // 리뷰 작성자와 수정하려는 사용자가 동일한지 확인
         if (!review.getUser().equals(userId)) {
-            throw new IllegalArgumentException("해당 리뷰에 대한 수정 권한이 없습니다.");
+            throw new IllegalArgumentException(ErrorCode.REVIEW_NOT_AUTHORIZED.getMessage());
         }
 
         review.setContents(requestDto.getContents());
@@ -90,7 +91,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public ReviewResponseDto getReview(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.REVIEW_NOT_FOUND.getMessage()));
 
         return new ReviewResponseDto(
                 review.getId(),
@@ -120,7 +121,7 @@ public class ReviewService {
     @Transactional
     public ReviewResponseDto deleteReview(Long reviewId, User user) {
         Review review = reviewRepository.findByIdAndUserId(reviewId, user.getId())
-                .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없거나 삭제 권한이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.REVIEW_NOT_AUTHORIZED.getMessage()));
 
         reviewRepository.delete(review);
 
