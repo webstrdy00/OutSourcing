@@ -1,5 +1,7 @@
 package com.sparta.spring26.global.security;
 
+import com.sparta.spring26.domain.token.entity.RefreshToken;
+import com.sparta.spring26.domain.token.repository.RefreshTokenRepository;
 import com.sparta.spring26.global.jwt.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -16,16 +18,19 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j(topic = "JWT 검증 및 인가")
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, RefreshTokenRepository refreshTokenRepository) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Override
@@ -37,33 +42,35 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = jwtUtil.getJwtFromHeader(req);
-        log.info("Extracted token from header: {}", token);
+        String accessToken = jwtUtil.getJwtFromHeader(req);
+        log.info("Extracted accessToken from header: {}", accessToken);
+        Optional<String> refreshTokenOpt = jwtUtil.getRefreshTokenFromCooke(req);
+        String refreshToken = refreshTokenOpt.get();
+        log.info("Extracted accessToken from header: {}", refreshToken);
 
-        String tokenValue = jwtUtil.substringToken(token);
-        log.info("Extracted token from header: {}", tokenValue);
+        if (StringUtils.hasText(accessToken)) {
+            if (jwtUtil.validateToken(accessToken)) {
+                setAuthentication(jwtUtil.getUserInfoFromToken(accessToken).getSubject());
+            } else if (StringUtils.hasText(refreshToken) && jwtUtil.validateRefreshToken(refreshToken)) {
+                // AccessToken 이 만료되었지만 RefreshToken 이 유효한 경우
+                Optional<RefreshToken> tokenOpt = refreshTokenRepository.findByToken(refreshToken);
+                if (tokenOpt.isPresent()){
+                    RefreshToken token = tokenOpt.get();
+                    String email = token.getUser().getEmail();
+                    UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(email);
 
+                    String newAccessToken = jwtUtil.createAccessToken(email, userDetails.getUser().getRole());
+                    res.addHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + newAccessToken);
 
-        if (StringUtils.hasText(tokenValue)) {
-            if (!jwtUtil.validateToken(tokenValue)) {
-                log.error("Token Error");
-                return;
+                    jwtUtil.updateRefreshToken(token);
+                    jwtUtil.setRefreshTokenCookie(res, token.getToken());
+
+                    setAuthentication(email);
+                }
             }
 
-            Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
-
-            log.info("Token value: {}", tokenValue);
-            log.info("User info from token: {}", info);
-
-            try {
-                setAuthentication(info.getSubject());
-            } catch (Exception e) {
-                log.error(e.getMessage());
-                return;
-            }
+            filterChain.doFilter(req, res);
         }
-
-        filterChain.doFilter(req, res);
     }
 
     // 인증 처리

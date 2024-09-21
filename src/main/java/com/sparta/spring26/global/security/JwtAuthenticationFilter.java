@@ -2,6 +2,7 @@ package com.sparta.spring26.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.spring26.domain.user.dto.LoginRequestDto;
+import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.domain.user.entity.UserRole;
 import com.sparta.spring26.global.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -44,11 +45,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        String email = ((UserDetailsImpl) authResult.getPrincipal()).getEmail();
-        UserRole role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authResult.getPrincipal();
+        User user = userDetails.getUser();
 
-        String token = jwtUtil.createToken(email, role);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + token);
+        String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + accessToken);
+
+        
+        // RefreshToken 생성 및 쿠키에 설정
+        jwtUtil.createAndSetRefreshToken(response, user);
+        
+        log.info("로그인 성공: {}", user.getEmail());
     }
 
     @Override
