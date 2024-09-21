@@ -2,6 +2,7 @@ package com.sparta.spring26.domain.user.entity;
 
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.domain.user.dto.UserRequestDto;
+import com.sparta.spring26.domain.user.enums.UserStatus;
 import com.sparta.spring26.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,6 +36,10 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private UserRole role;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status = UserStatus.ACTIVE;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Restaurant> restaurantList = new ArrayList<>();
 
@@ -44,6 +49,19 @@ public class User extends BaseTimeEntity {
         this.phone = requestDto.getPhone();
         this.password = password;
         this.role = role;
+        this.status = UserStatus.ACTIVE;
+    }
+
+    public void deactivate() {
+        this.status = UserStatus.INACTIVE;
+    }
+
+    public void suspend() {
+        this.status = UserStatus.SUSPENDED;
+    }
+
+    public void activate() {
+        this.status = UserStatus.ACTIVE;
     }
 
 }
