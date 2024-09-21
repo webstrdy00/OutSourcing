@@ -118,7 +118,7 @@ public class ReviewService {
 
     // 리뷰 삭제
     @Transactional
-    public ReviewResponseDto deleteReview(Long reviewId, ReviewRequestDto reviewRequestDto, User user) {
+    public ReviewResponseDto deleteReview(Long reviewId, User user) {
         Review review = reviewRepository.findByIdAndUserId(reviewId, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없거나 삭제 권한이 없습니다."));
 

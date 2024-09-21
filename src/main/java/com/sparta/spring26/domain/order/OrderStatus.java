@@ -8,7 +8,7 @@ public enum OrderStatus {
     COOKING_COMPLETED(OrderStatus.Status.COOKING_COMPLETED), // 조리 완료
     OUT_FOR_DELIVERY(OrderStatus.Status.OUT_FOR_DELIVERY), // 배달 중
     DELIVERYED(OrderStatus.Status.DELIVERYED), // 배달 완료
-    CANCELLED(OrderStatus.Status.CANCELLED);
+    CANCELLED(OrderStatus.Status.CANCELLED); // 주문 취소
 
 
     private final String status;

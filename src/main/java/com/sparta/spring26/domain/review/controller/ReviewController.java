@@ -23,7 +23,12 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    // 리뷰 작성 (로그인한 유저만 가능, 특정 레스토랑 및 메뉴에 대한 리뷰만 작성 가능)
+    /**
+     * 리뷰 등록
+     * @param userDetails 인증된 사용자 정보
+     * @param reviewRequestDto 리뷰 요청 데이터
+     * @return 리뷰 응답 데이터, 상태 코드 201
+     */
     @PostMapping
     public ResponseEntity<?> createReview(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -34,7 +39,13 @@ public class ReviewController {
         return ResponseEntity.ok(responseDto);
     }
 
-    // 리뷰 수정
+    /**
+     * 리뷰 수정
+     * @param userDetails 인증된 사용자 정보
+     * @param reviewId 리뷰 ID
+     * @param reviewRequestDto 수정할 리뷰 데이터
+     * @return 수정된 리뷰 응답 데이터, 상태 코드 200
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateReview(
             @PathVariable Long reveiewId,
@@ -48,14 +59,22 @@ public class ReviewController {
 
     }
 
-    // 리뷰 단건 조회
+    /**
+     * 리뷰 단건 조회
+     * @param reviewId 리뷰 ID
+     * @return 리뷰 응답 데이터, 상태 코드 200
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ReviewResponseDto> getReview(@PathVariable Long reviewId){
         ReviewResponseDto review = reviewService.getReview(reviewId);
         return ResponseEntity.ok(review);
     }
 
-    // 리뷰 다건 조회(페이징)
+    /**
+     * 모든 리뷰 조회
+     * @param pageable 페이징 정보
+     * @return 리뷰 응답 데이터 리스트, 상태 코드 200
+     */
     @GetMapping
     public ResponseEntity<ReviewPagedResponseDto<ReviewResponseDto>> getReviewList(
             @RequestParam(defaultValue = "0")int page,
@@ -68,15 +87,19 @@ public class ReviewController {
 
     }
 
-    // 리뷰 삭제
+    /**
+     * 리뷰 삭제
+     * @param reviewId 리뷰 ID
+     * @param userDetails 인증된 사용자 정보
+     * @return 상태 코드 204
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<ReviewResponseDto> deleteReview(
             @PathVariable Long reviewId,
-            @RequestBody ReviewRequestDto reviewRequestDto,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ){
         User user = userDetails.getUser();
-        ReviewResponseDto responseDto = reviewService.deleteReview(reviewId, reviewRequestDto, user);
+        ReviewResponseDto responseDto = reviewService.deleteReview(reviewId, user);
         return ResponseEntity.ok(responseDto);
     }
 

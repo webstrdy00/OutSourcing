@@ -115,9 +115,16 @@ public class OrderService {
 
     // 주문 삭제
     @Transactional
-    public void deleteOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
+    public void deleteOrder(Long orderId, User user) {
+        Order order = orderRepository.findByIdAndUserId(orderId, user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+
+        // 주문 상태가 "주문 중"인지 확인
+        if (!order.getStatus().equals(OrderStatus.ORDER_ACCEPTED)) {
+            throw new IllegalArgumentException("주문은 '주문 중' 상태일 때만 삭제할 수 있습니다.");
+        }
+
+        order.setStatus(OrderStatus.CANCELLED);
         orderRepository.delete(order);
     }
 

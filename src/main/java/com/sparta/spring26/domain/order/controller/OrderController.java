@@ -25,8 +25,12 @@ public class OrderController {
 
     private final OrderService orderService;
 
-
-    // 주문 등록
+    /**
+     * 주문 등록
+     * @param userDetails 인증된 사용자 정보
+     * @param orderCreateRequestDto 주문 생성 요청 데이터
+     * @return 주문 응답 데이터, 상태 코드 201
+     */
     @PostMapping
     public ResponseEntity<OrderResponseDto> createOrder(
             @AuthenticationPrincipal UserDetailsImpl userDetails, // 인증된 사용자 정보
@@ -45,7 +49,13 @@ public class OrderController {
         return ResponseEntity.ok(responseDto);
     }
 
-    // 주문 상태 업데이트
+    /**
+     * 주문 상태 업데이트
+     * @param userDetails 인증된 사용자 정보
+     * @param orderId 주문 ID
+     * @param statusUpdateRequestDto 상태 업데이트 요청 데이터
+     * @return 업데이트된 주문 응답 데이터, 상태 코드 200
+     */
     @PutMapping("/{orderId}/status")
     public ResponseEntity<?> updateOrderStatus(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -56,24 +66,38 @@ public class OrderController {
         return ResponseEntity.ok(responseDto);
     }
 
-    // 주문 상세 조회
+    /**
+     * 주문 상세 조회
+     * @param orderId 주문 ID
+     * @return 주문 응답 데이터, 상태 코드 200
+     */
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDto> getOrder(@PathVariable Long orderId) {
         OrderResponseDto orderResponseDto = orderService.getOrder(orderId);
         return ResponseEntity.ok(orderResponseDto);
     }
 
-    // 주문 리스트 조회
+    /**
+     * 모든 주문 리스트 조회
+     * @return 주문 응답 데이터 리스트, 상태 코드 200
+     */
     @GetMapping
     public ResponseEntity<List<OrderResponseDto>> getOrderList() {
         List<OrderResponseDto> orderList = orderService.getOrderList();
         return ResponseEntity.ok(orderList);
     }
 
-    // 주문 삭제
+    /**
+     * 주문 삭제
+     * @param orderId 주문 ID
+     * @return 상태 코드 204 (No content)
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
-        orderService.deleteOrder(orderId);
+    public ResponseEntity<Void> deleteOrder(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable Long orderId) {
+        User user = userDetails.getUser();
+        orderService.deleteOrder(orderId, user);
         return ResponseEntity.noContent().build();
     }
 
