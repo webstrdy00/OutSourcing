@@ -55,16 +55,13 @@ public class JwtUtil {
         return request.getHeader(AUTHORIZATION_HEADER);
     }
 
-    public String substringToken(String token){
-        if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)){
-            token =  token.substring(7);
-            while (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)){
-                token = token.substring(7);
-            }
-            return token;
+    public String substringToken(String token) {
+        if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
+            return token.substring(BEARER_PREFIX.length()); // BEARER_PREFIX의 길이만큼 잘라냄
         }
         throw new NullPointerException("Not Found Token");
     }
+
 
     // 토큰 검증
     public boolean validateToken(String token) {

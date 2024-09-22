@@ -1,5 +1,7 @@
 package com.sparta.spring26.domain.order.service;
 
+import com.sparta.spring26.domain.menu.entity.Menu;
+import com.sparta.spring26.domain.menu.repository.MenuRepository;
 import com.sparta.spring26.domain.order.OrderStatus;
 import com.sparta.spring26.domain.order.dto.request.OrderCreateRequestDto;
 import com.sparta.spring26.domain.order.dto.response.OrderResponseDto;
@@ -27,15 +29,23 @@ public class OrderService {
     private final OrderRepository orderRepository;
 
     private final RestaurantRepository restaurantRepository;
+
+    private final MenuRepository menuRepository;
+
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public OrderResponseDto createOrder(User user, OrderCreateRequestDto orderCreateRequestDto){
 
-        // 최소 주문 금액과 가게 오픈 시간 체크
+        // 가게 일치 여부 확인
         Restaurant restaurant = restaurantRepository.findById(orderCreateRequestDto.getRestaurantId())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.RESTAURANT_NOT_FOUND.getMessage()));
 
+        // 메뉴 일치 여부 확인
+        Menu menu = menuRepository.findById(orderCreateRequestDto.getMenuId())
+                .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.MENU_NOT_FOUND.getMessage()));
+
+        // 최소 주문 금액
         if(orderCreateRequestDto.getTotalPrice() < restaurant.getMinDeliveryPrice()) {
             throw new IllegalArgumentException(
                     String.format("최소 주문 금액은 %d원입니다.", restaurant.getMinDeliveryPrice()));
@@ -49,6 +59,8 @@ public class OrderService {
         // 초기 상태는 접수 중
         Order order = new Order();
         order.setRestaurant(restaurant);
+        order.setMenu(menu);
+        order.setQuantity(orderCreateRequestDto.getQuantity());
         order.setTotalPrice(orderCreateRequestDto.getTotalPrice());
         order.setStatus(OrderStatus.ORDER_ACCEPTED);
 

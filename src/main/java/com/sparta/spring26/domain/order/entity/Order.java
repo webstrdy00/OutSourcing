@@ -9,8 +9,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 
 @Entity
 @Setter
@@ -37,6 +35,9 @@ public class Order extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Integer totalPrice;
+
+    @Column(nullable = false)
+    private Integer quantity;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
