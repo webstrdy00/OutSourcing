@@ -10,6 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Setter
 @Getter
@@ -34,13 +37,18 @@ public class Order extends BaseTimeEntity {
     private Menu menu;
 
     @Column(nullable = false)
-    private Integer totalPrice;
+    private int totalPrice;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private int quantity;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderMenu> orderMenuList = new ArrayList<>();
+
 }
+
+

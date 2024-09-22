@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,11 +17,10 @@ public class OrderCreateRequestDto {
     private Long restaurantId;
 
     @NotNull(message = "메뉴 ID는 필수입니다.")
-    private Long menuId;
+    private List<Long> menuIds;
 
     @Min(value = 1, message = "수량은 1 이상이어야 합니다.")
-    private int quantity;
+    private Integer quantity;
 
-    private int totalPrice;
-
+    private List<MenuOrderRequestDto> menuOrderList;
 }

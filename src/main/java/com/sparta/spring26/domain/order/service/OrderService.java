@@ -3,10 +3,11 @@ package com.sparta.spring26.domain.order.service;
 import com.sparta.spring26.domain.menu.entity.Menu;
 import com.sparta.spring26.domain.menu.repository.MenuRepository;
 import com.sparta.spring26.domain.order.OrderStatus;
+import com.sparta.spring26.domain.order.dto.request.MenuOrderRequestDto;
 import com.sparta.spring26.domain.order.dto.request.OrderCreateRequestDto;
 import com.sparta.spring26.domain.order.dto.response.OrderResponseDto;
 import com.sparta.spring26.domain.order.entity.Order;
-import com.sparta.spring26.domain.order.event.OrderCreatedEvent;
+import com.sparta.spring26.domain.order.entity.OrderMenu;
 import com.sparta.spring26.domain.order.repository.OrderRepository;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.domain.restaurant.repository.RestaurantRepository;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,21 +34,37 @@ public class OrderService {
 
     private final MenuRepository menuRepository;
 
-    private final ApplicationEventPublisher eventPublisher;
-
     @Transactional
     public OrderResponseDto createOrder(User user, OrderCreateRequestDto orderCreateRequestDto){
 
-        // 가게 일치 여부 확인
+        // 가게 검증
         Restaurant restaurant = restaurantRepository.findById(orderCreateRequestDto.getRestaurantId())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.RESTAURANT_NOT_FOUND.getMessage()));
 
-        // 메뉴 일치 여부 확인
-        Menu menu = menuRepository.findById(orderCreateRequestDto.getMenuId())
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.MENU_NOT_FOUND.getMessage()));
+        // 주문 초기화
+        Order order = new Order();
+        order.setRestaurant(restaurant);
+
+        int totalPrice = 0;
+
+        // 여러 메뉴 처리
+        List<OrderMenu> orderMenuList = new ArrayList<>();
+        for (MenuOrderRequestDto menuOrder : orderCreateRequestDto.getMenuOrderList()) {
+            Menu menu = menuRepository.findById(menuOrder.getMenuId())
+                    .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.MENU_NOT_FOUND.getMessage()));
+
+            totalPrice += menu.getPrice() * menuOrder.getQuantity(); // 총 가격 계산
+
+            OrderMenu orderMenu = new OrderMenu();
+            orderMenu.setOrder(order);
+            orderMenu.setMenu(menu);
+            orderMenu.setQuantity(menuOrder.getQuantity());
+
+            order.getOrderMenuList().add(orderMenu);
+        }
 
         // 최소 주문 금액
-        if(orderCreateRequestDto.getTotalPrice() < restaurant.getMinDeliveryPrice()) {
+        if(totalPrice < restaurant.getMinDeliveryPrice()) {
             throw new IllegalArgumentException(
                     String.format("최소 주문 금액은 %d원입니다.", restaurant.getMinDeliveryPrice()));
         }
@@ -56,22 +74,15 @@ public class OrderService {
             throw new IllegalArgumentException(ErrorCode.MAX_RESTAURANT_LIMIT.getMessage());
         }
 
-        // 초기 상태는 접수 중
-        Order order = new Order();
-        order.setRestaurant(restaurant);
-        order.setMenu(menu);
-        order.setQuantity(orderCreateRequestDto.getQuantity());
-        order.setTotalPrice(orderCreateRequestDto.getTotalPrice());
-        order.setStatus(OrderStatus.ORDER_ACCEPTED);
+        // 총 가격 설정 및 주문 저장
+        order.setTotalPrice(totalPrice);
+        order.setStatus(OrderStatus.ORDER_ACCEPTED); // 초기 상태 설정
 
         Order savedOrder = orderRepository.save(order);
 
-        // 주문 생성 이벤트 발행
-        eventPublisher.publishEvent(new OrderCreatedEvent(savedOrder));
-
         return new OrderResponseDto(
                 savedOrder.getId(),
-                orderCreateRequestDto.getMenuId(),
+                orderCreateRequestDto.getMenuIds(),
                 restaurant.getId(),
                 restaurant.getName(),
                 savedOrder.getTotalPrice(),
@@ -81,35 +92,27 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDto updateOrderStatus(User user, Long orderId, OrderStatus newStatus){
+    public OrderStatus updateOrderStatus(User user, Long orderId, OrderStatus newStatus){
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
 
-        if (order.getMenu() == null){
-            throw new IllegalArgumentException(ExceptionCode.MENU_NOT_FOUND.getMessage());
-        }
-
         order.setStatus(newStatus);
-        Order updatedOrder = orderRepository.save(order);
+        orderRepository.save(order);
 
-        return new OrderResponseDto(
-                updatedOrder.getId(),
-                updatedOrder.getMenu().getId(),
-                updatedOrder.getRestaurant().getId(),
-                updatedOrder.getRestaurant().getName(),
-                updatedOrder.getTotalPrice(),
-                updatedOrder.getRestaurant().getAddress(),
-                updatedOrder.getStatus()
-        );
+        return order.getStatus();
     }
 
     // 주문 상세 조회
     public OrderResponseDto getOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.ORDER_NOT_FOUND.getMessage()));
+
+        List<Long> menuIds = order.getOrderMenuList().stream()
+                .map(om -> om.getMenu().getId())
+                .collect(Collectors.toList());
         return new OrderResponseDto(
                 order.getId(),
-                order.getMenu().getId(),
+                menuIds, // 여러 메뉴 id
                 order.getRestaurant().getId(),
                 order.getRestaurant().getName(),
                 order.getTotalPrice(),
@@ -121,15 +124,21 @@ public class OrderService {
     // 모든 주문 리스트 조회
     public List<OrderResponseDto> getOrderList() {
         List<Order> orderList = orderRepository.findAll();
-        return orderList.stream().map(order -> new OrderResponseDto(
-                order.getId(),
-                order.getMenu().getId(),
-                order.getRestaurant().getId(),
-                order.getRestaurant().getName(),
-                order.getTotalPrice(),
-                order.getRestaurant().getAddress(),
-                order.getStatus()
-        )).collect(Collectors.toList());
+        return orderList.stream().map(order -> {
+            List<Long> menuIds = order.getOrderMenuList().stream()
+                    .map(om -> om.getMenu().getId())
+                    .collect(Collectors.toList());
+
+            return new OrderResponseDto(
+                    order.getId(),
+                    menuIds, // 여러 메뉴 ID
+                    order.getRestaurant().getId(),
+                    order.getRestaurant().getName(),
+                    order.getTotalPrice(),
+                    order.getRestaurant().getAddress(),
+                    order.getStatus()
+            );
+        }).collect(Collectors.toList());
     }
 
     // 주문 삭제

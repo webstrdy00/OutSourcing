@@ -1,5 +1,6 @@
 package com.sparta.spring26.domain.order.controller;
 
+import com.sparta.spring26.domain.order.OrderStatus;
 import com.sparta.spring26.domain.order.dto.request.OrderCreateRequestDto;
 import com.sparta.spring26.domain.order.dto.request.OrderStatusUpdateRequestDto;
 import com.sparta.spring26.domain.order.dto.response.OrderResponseDto;
@@ -54,14 +55,14 @@ public class OrderController {
      * @param statusUpdateRequestDto 상태 업데이트 요청 데이터
      * @return 업데이트된 주문 응답 데이터, 상태 코드 200
      */
-    @PutMapping("/{orderId}/status")
-    public ResponseEntity<?> updateOrderStatus(
+    @PatchMapping("/{orderId}/status")
+    public ResponseEntity<OrderStatus> updateOrderStatus(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long orderId,
             @Valid @RequestBody OrderStatusUpdateRequestDto statusUpdateRequestDto) {
         User user = userDetails.getUser();
-        OrderResponseDto responseDto = orderService.updateOrderStatus(user, orderId, statusUpdateRequestDto.getNewStatus());
-        return ResponseEntity.ok(responseDto);
+        OrderStatus updateOrderStatus = orderService.updateOrderStatus(user, orderId, statusUpdateRequestDto.getNewStatus());
+        return ResponseEntity.ok(updateOrderStatus);
     }
 
     /**

@@ -5,22 +5,24 @@ import com.sparta.spring26.global.entity.BaseTimeEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 public class OrderResponseDto extends BaseTimeEntity {
 
     private Long id;
-    private Long menuId;
+    private List<Long> menuIds;
     private Long restaurantId;
     private String restaurantName;
     private Integer totalPrice;
     private String address;
     private OrderStatus status;
 
-    public OrderResponseDto(Long id, Long menuId, Long restaurantId, String restaurantName,
+    public OrderResponseDto(Long id, List<Long> menuIds, Long restaurantId, String restaurantName,
                             Integer totalPrice, String address, OrderStatus status) {
         this.id = id;
-        this.menuId = menuId;
+        this.menuIds = menuIds;
         this.restaurantId = restaurantId;
         this.restaurantName = restaurantName;
         this.totalPrice = totalPrice;
