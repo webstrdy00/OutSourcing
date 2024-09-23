@@ -9,7 +9,7 @@ import com.sparta.spring26.domain.restaurant.repository.RestaurantRepository;
 import com.sparta.spring26.domain.user.dto.UserRequestDto;
 import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.domain.user.entity.UserRole;
-import com.sparta.spring26.domain.user.repository.UserRepository;
+import com.sparta.spring26.global.exception.ExceptionCode;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MenuServiceTest {
@@ -44,9 +44,7 @@ public class MenuServiceTest {
         @Test
         void 메뉴_등록_성공() {
             // given
-            UserRequestDto userRequestDto = new UserRequestDto();
-
-            User user = new User(userRequestDto, "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+            User user = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
 
             Long userId = 1L;
 
@@ -66,6 +64,23 @@ public class MenuServiceTest {
 
             // then
             verify(menuRepository, times(1)).save(any(Menu.class));
+        }
+
+        @Test
+        void 메뉴_등록중_가게가_존재하지_않는_예외() {
+            // given
+            User user = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+
+            Long restaurantId = 1L;
+            String name = "menuName";
+            String category = "main";
+            Integer price = 50000;
+
+            // when
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> menuService.createMenu(user, restaurantId, name, category, price));
+
+            // then
+            assertEquals(ExceptionCode.RESTAURANT_NOT_FOUND.getMessage(), exception.getMessage());
         }
     }
 }
