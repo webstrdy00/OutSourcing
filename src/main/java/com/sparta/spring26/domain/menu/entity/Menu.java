@@ -27,6 +27,7 @@ public class Menu extends BaseTimeEntity {
     @Column
     private Boolean popularity;
 
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MenuStatus status = MenuStatus.AVAILABLE;

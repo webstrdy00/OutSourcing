@@ -59,7 +59,7 @@ public class MenuService {
         }
 
         // restaurant 의 user와 받아온 user 검증
-        if(!restaurant.getOwner().equals(user)) {
+        if(!restaurant.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
@@ -90,7 +90,7 @@ public class MenuService {
         }
 
         // restaurant 의 user와 받아온 user 검증
-        if(!restaurant.getOwner().equals(user)) {
+        if(!restaurant.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
