@@ -5,10 +5,14 @@ import com.sparta.spring26.domain.user.dto.UserRequestDto;
 import com.sparta.spring26.domain.user.dto.UserResponseDto;
 import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserStatus;
 import com.sparta.spring26.domain.user.repository.UserRepository;
+import com.sparta.spring26.global.exception.CustomException;
+import com.sparta.spring26.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -57,5 +61,23 @@ public class UserService {
         }
 
         return user.getId();
+    }
+
+    @Transactional
+    public Long deleteUser(Long userId, String password) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getStatus() == UserStatus.INACTIVE){
+            throw new CustomException(ErrorCode.ALREADY_DEACTIVATED_USER);
+        }
+
+        if (!passwordEncoder.matches(password, user.getPassword())){
+            throw new CustomException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        user.deactivate();
+
+        return userId;
     }
 }
