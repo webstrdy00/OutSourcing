@@ -19,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -117,7 +119,6 @@ public class MenuServiceTest {
 
     @Nested
     class UpdateMenuTest {
-
         @Test
         void 메뉴_업데이트_성공() {
             // given
@@ -254,6 +255,40 @@ public class MenuServiceTest {
 
             // then
             assertEquals(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage(), exception.getMessage());
+        }
+    }
+
+    @Nested
+    class GetMenusTest {
+        @Test
+        void 메뉴_목록_가져오기_성공() {
+            // given
+            Long restaurantId = 1L;
+
+            User owner = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+            Restaurant restaurant = new Restaurant(new RestaurantRequestDto(), owner);
+
+            Menu menu1 = new Menu(restaurant, "Menu1", 15000, "main");
+            Menu menu2 = new Menu(restaurant, "Menu2", 10000, "main");
+            Menu menu3 = new Menu(restaurant, "Menu3", 8000, "side");
+            Menu menu4 = new Menu(restaurant, "Menu4", 20000, "side");
+            Menu menu5 = new Menu(restaurant, "Menu5", 25000, "drink");
+
+            List<Menu> menus = Arrays.asList(menu1, menu2, menu3, menu4, menu5);
+
+            given(restaurantRepository.findById(anyLong())).willReturn(Optional.of(restaurant));
+            given(menuRepository.findByRestaurantIdAndStatusNot(anyLong(), any(MenuStatus.class))).willReturn(menus);
+
+            // when
+            List<Menu> result = menuService.getMenus(restaurantId);
+
+            // then
+            assertEquals(5, result.size());
+            assertEquals("Menu1", result.get(0).getName());
+            assertEquals("Menu2", result.get(1).getName());
+            assertEquals("Menu3", result.get(2).getName());
+            assertEquals("Menu4", result.get(3).getName());
+            assertEquals("Menu5", result.get(4).getName());
         }
     }
 }
