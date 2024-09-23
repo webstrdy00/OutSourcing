@@ -8,9 +8,11 @@ import com.sparta.spring26.domain.menu.entity.MenuStatus;
 import com.sparta.spring26.domain.menu.service.MenuService;
 import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.global.dto.ApiResponse;
+import com.sparta.spring26.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/delivery/restaurants/{restaurantId}/menus")
+@RequestMapping("/restaurants/{restaurantId}/menus")
 public class MenuController {
     private final MenuService menuService;
 
@@ -27,8 +29,6 @@ public class MenuController {
      * 메뉴 등록
      */
     @PostMapping
-//    public ApiResponse<Void> createMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable long restaurantId, @Valid @RequestBody CreateMenuRequestDto request){
-//        User user = userDetails.getUser();
     public ResponseEntity<ApiResponse<?>> createMenu(@PathVariable Long restaurantId, @Valid @RequestBody CreateMenuRequestDto request){
         User user = new User();
 
@@ -41,8 +41,6 @@ public class MenuController {
      * 메뉴 수정
      */
     @PatchMapping("/{id}")
-//    public ApiResponse<Void> updateMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @PathVariable Long id, @Valid @RequestBody UpdateMenuRequestDto request){
-//        User user = userDetails.getUser();
     public ResponseEntity<ApiResponse<?>> updateMenu(@PathVariable Long restaurantId, @PathVariable Long id, @Valid @RequestBody UpdateMenuRequestDto request){
         User user = new User();
 
@@ -70,8 +68,6 @@ public class MenuController {
      * 메뉴 삭제
      */
     @DeleteMapping("/{id}")
-//    public ApiResponse<Void> deleteMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @PathVariable Long id){
-//        User user = userDetails.getUser();
     public ResponseEntity<ApiResponse<?>> deleteMenu(@PathVariable Long restaurantId, @PathVariable Long id){
         User user = new User();
 
