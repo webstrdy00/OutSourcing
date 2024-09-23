@@ -225,5 +225,35 @@ public class MenuServiceTest {
             // then
             assertEquals(ExceptionCode.RESTAURANT_MENU_MISMATCH.getMessage(), exception.getMessage());
         }
+
+        @Test
+        void 메뉴_업데이트중_권한이_없는_예외() {
+            // given
+            User owner = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+            User otherUser = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+
+            ReflectionTestUtils.setField(owner, "id", 1L);
+            ReflectionTestUtils.setField(otherUser, "id", 2L);
+
+            Long restaurantId = 1L;
+            Long menuId = 1L;
+            String name = "menuName";
+            String category = "main";
+            Integer price = 50000;
+            Boolean popularity = true;
+            MenuStatus status = MenuStatus.AVAILABLE;
+
+            Restaurant restaurant = new Restaurant(new RestaurantRequestDto(), owner);
+            Menu menu = new Menu(restaurant, name, price, category);
+
+            given(menuRepository.findById(anyLong())).willReturn(Optional.of(menu));
+            given(restaurantRepository.findById(anyLong())).willReturn(Optional.of(restaurant));
+
+            // when
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> menuService.updateMenu(otherUser, restaurantId, menuId, name, category, price, popularity, status));
+
+            // then
+            assertEquals(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage(), exception.getMessage());
+        }
     }
 }
