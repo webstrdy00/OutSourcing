@@ -17,9 +17,9 @@ public class ReviewRequestDto {
     @Max(value = 5, message = "Rating은 최대 5이여야 합니다.")
     private Integer rating;
 
-    @NotBlank(message = "메뉴 ID는 필수 값입니다.")
+    @NotNull(message = "메뉴 ID는 필수 값입니다.")
     private Long menuId;
 
-    @NotBlank(message = "레스토랑 ID는 필수 값입니다.")
+    @NotNull(message = "레스토랑 ID는 필수 값입니다.")
     private Long restaurantId;
 }

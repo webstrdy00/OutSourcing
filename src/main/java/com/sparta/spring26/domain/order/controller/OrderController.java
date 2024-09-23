@@ -39,7 +39,8 @@ public class OrderController {
         User user = userDetails.getUser();
 
         // 권한 체크
-        if (!userDetails.getAuthorities().contains(new SimpleGrantedAuthority("USER"))){
+        if (!userDetails.getAuthorities().stream()
+                .noneMatch(authority -> authority.getAuthority().equals("USER"))) {
             throw new IllegalArgumentException("주문 등록은 일반 사용자만 가능합니다.");
         }
         // 주문 생성 서비스 호출
@@ -70,20 +71,10 @@ public class OrderController {
      * @param orderId 주문 ID
      * @return 주문 응답 데이터, 상태 코드 200
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponseDto> getOrder(@PathVariable Long orderId) {
         OrderResponseDto orderResponseDto = orderService.getOrder(orderId);
         return ResponseEntity.ok(orderResponseDto);
-    }
-
-    /**
-     * 모든 주문 리스트 조회
-     * @return 주문 응답 데이터 리스트, 상태 코드 200
-     */
-    @GetMapping
-    public ResponseEntity<List<OrderResponseDto>> getOrderList() {
-        List<OrderResponseDto> orderList = orderService.getOrderList();
-        return ResponseEntity.ok(orderList);
     }
 
     /**
@@ -91,7 +82,7 @@ public class OrderController {
      * @param orderId 주문 ID
      * @return 상태 코드 204 (No content)
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{orderId}")
     public ResponseEntity<Void> deleteOrder(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable Long orderId) {

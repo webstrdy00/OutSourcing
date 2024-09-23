@@ -30,31 +30,31 @@ public class ReviewController {
      * @return 리뷰 응답 데이터, 상태 코드 201
      */
     @PostMapping
-    public ResponseEntity<?> createReview(
+    public ResponseEntity<ReviewResponseDto> createReview(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody ReviewRequestDto reviewRequestDto
     ){
-        Long userId = userDetails.getUser().getId();
-        ReviewResponseDto responseDto = reviewService.createReview(userId, reviewRequestDto);
+        User user = userDetails.getUser();
+        ReviewResponseDto responseDto = reviewService.createReview(user, reviewRequestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     /**
      * 리뷰 수정
      * @param userDetails 인증된 사용자 정보
-     * @param reviewId 리뷰 ID
+     * @param reveiewId 리뷰 ID
      * @param reviewRequestDto 수정할 리뷰 데이터
      * @return 수정된 리뷰 응답 데이터, 상태 코드 200
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateReview(
+    @PutMapping("/{reveiewId}")
+    public ResponseEntity<ReviewResponseDto> updateReview(
             @PathVariable Long reveiewId,
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid
             @RequestBody ReviewRequestDto reviewRequestDto
     ){
-        Long userId = userDetails.getUser().getId();
-        ReviewResponseDto responseDto = reviewService.updateReview(userId, reveiewId, reviewRequestDto);
+        User user = userDetails.getUser();
+        ReviewResponseDto responseDto = reviewService.updateReview(user, reveiewId, reviewRequestDto);
         return ResponseEntity.ok(responseDto);
 
     }
@@ -64,7 +64,7 @@ public class ReviewController {
      * @param reviewId 리뷰 ID
      * @return 리뷰 응답 데이터, 상태 코드 200
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{reviewId}")
     public ResponseEntity<ReviewResponseDto> getReview(@PathVariable Long reviewId){
         ReviewResponseDto review = reviewService.getReview(reviewId);
         return ResponseEntity.ok(review);
@@ -93,7 +93,7 @@ public class ReviewController {
      * @param userDetails 인증된 사용자 정보
      * @return 상태 코드 204
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{reviewId}")
     public ResponseEntity<ReviewResponseDto> deleteReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
