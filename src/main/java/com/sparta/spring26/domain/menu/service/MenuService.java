@@ -27,7 +27,7 @@ public class MenuService {
                 new IllegalArgumentException(ExceptionCode.RESTAURANT_NOT_FOUND.getMessage()));
 
         // restaurant 의 user와 받아온 user 검증
-        if(!restaurant.getOwner().equals(user)) {
+        if(!restaurant.getOwner().getId().equals(user.getId())) {
             new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
