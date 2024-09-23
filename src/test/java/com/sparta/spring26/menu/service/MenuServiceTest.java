@@ -296,7 +296,6 @@ public class MenuServiceTest {
             // given
             Long restaurantId = 1L;
 
-            // 가게가 존재하지 않는 경우
             given(restaurantRepository.findById(anyLong())).willReturn(Optional.empty());
 
             // when
