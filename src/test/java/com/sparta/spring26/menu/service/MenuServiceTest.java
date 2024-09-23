@@ -1,6 +1,7 @@
 package com.sparta.spring26.menu.service;
 
 import com.sparta.spring26.domain.menu.entity.Menu;
+import com.sparta.spring26.domain.menu.entity.MenuStatus;
 import com.sparta.spring26.domain.menu.repository.MenuRepository;
 import com.sparta.spring26.domain.menu.service.MenuService;
 import com.sparta.spring26.domain.restaurant.dto.request.RestaurantRequestDto;
@@ -20,8 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -110,6 +110,41 @@ public class MenuServiceTest {
             // then
             assertEquals(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage(), exception.getMessage());
 
+        }
+    }
+
+    @Nested
+    class UpdateMenuTest {
+
+        @Test
+        void 메뉴_업데이트_성공() {
+            // given
+            User user = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+            ReflectionTestUtils.setField(user, "id", 1L);
+
+            Long restaurantId = 1L;
+            Long menuId = 1L;
+            String newName = "Updated Menu";
+            String newCategory = "main";
+            Integer newPrice = 60000;
+            Boolean newPopularity = true;
+            MenuStatus newStatus = MenuStatus.AVAILABLE;
+
+            Restaurant restaurant = new Restaurant(new RestaurantRequestDto(), user);
+            Menu menu = new Menu(restaurant, "Old Menu", 50000, "main");
+
+            given(menuRepository.findById(anyLong())).willReturn(Optional.of(menu));
+            given(restaurantRepository.findById(anyLong())).willReturn(Optional.of(restaurant));
+
+            // when
+            menuService.updateMenu(user, restaurantId, menuId, newName, newCategory, newPrice, newPopularity, newStatus);
+
+            // then
+            assertEquals(newName, menu.getName());
+            assertEquals(newCategory, menu.getCategory());
+            assertEquals(newPrice, menu.getPrice());
+            assertEquals(newPopularity, menu.getPopularity());
+            assertEquals(newStatus, menu.getStatus());
         }
     }
 }
