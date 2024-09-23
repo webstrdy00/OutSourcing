@@ -187,15 +187,43 @@ public class MenuServiceTest {
 
             Menu menu = new Menu(new Restaurant(new RestaurantRequestDto(), user), name, price, category);
 
-            given(menuRepository.findById(menuId)).willReturn(Optional.of(menu));
+            given(menuRepository.findById(anyLong())).willReturn(Optional.of(menu));
             given(restaurantRepository.findById(anyLong())).willReturn(Optional.empty());
 
             // when
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                    () -> menuService.updateMenu(user, restaurantId, menuId, name, category, price, popularity, status));
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> menuService.updateMenu(user, restaurantId, menuId, name, category, price, popularity, status));
 
             // then
             assertEquals(ExceptionCode.RESTAURANT_NOT_FOUND.getMessage(), exception.getMessage());
+        }
+
+        @Test
+        void 메뉴_업데이트중_가게의_메뉴가_아닌_예외() {
+            // given
+            User user = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+            ReflectionTestUtils.setField(user, "id", 1L);
+
+            Long restaurantId = 1L;
+            Long menuId = 1L;
+            String name = "menuName";
+            String category = "main";
+            Integer price = 50000;
+            Boolean popularity = true;
+            MenuStatus status = MenuStatus.AVAILABLE;
+
+            Restaurant otherRestaurant = new Restaurant(new RestaurantRequestDto(), user);
+            Menu menu = new Menu(otherRestaurant, name, price, category);
+
+            Restaurant restaurant = new Restaurant(new RestaurantRequestDto(), user);
+
+            given(menuRepository.findById(anyLong())).willReturn(Optional.of(menu));
+            given(restaurantRepository.findById(anyLong())).willReturn(Optional.of(restaurant));
+
+            // when
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> menuService.updateMenu(user, restaurantId, menuId, name, category, price, popularity, status));
+
+            // then
+            assertEquals(ExceptionCode.RESTAURANT_MENU_MISMATCH.getMessage(), exception.getMessage());
         }
     }
 }
