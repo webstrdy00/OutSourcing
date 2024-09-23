@@ -24,8 +24,9 @@ public class Menu extends BaseTimeEntity {
     @Column(nullable = false, length = 100)
     private String category;
 
-    @Column(nullable = false)
-    private Boolean popularity = false;
+    @Column
+    private Boolean popularity;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

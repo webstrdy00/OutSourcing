@@ -3,26 +3,36 @@ package com.sparta.spring26.domain.order.dto.response;
 import com.sparta.spring26.domain.order.OrderStatus;
 import com.sparta.spring26.global.entity.BaseTimeEntity;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-public class OrderResponseDto extends BaseTimeEntity {
+@NoArgsConstructor
+public class OrderResponseDto {
 
-    private Long orderId;
-    private Long menuId;
+    private Long id;
+    private List<Long> menuIds;
     private Long restaurantId;
     private String restaurantName;
-    private Integer totalAmount;
+    private Integer totalPrice;
     private String address;
     private OrderStatus status;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
 
-    public OrderResponseDto(Long orderId, Long menuId, Long restaurantId, String restaurantName,
-                            Integer totalAmount, String address, OrderStatus status) {
-        this.orderId = orderId;
-        this.menuId = menuId;
+
+    public OrderResponseDto(Long id, List<Long> menuIds, Long restaurantId, String restaurantName,
+                            Integer totalPrice, String address, OrderStatus status, LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        this.id = id;
+        this.menuIds = menuIds;
         this.restaurantId = restaurantId;
         this.restaurantName = restaurantName;
-        this.totalAmount = totalAmount;
+        this.totalPrice = totalPrice;
         this.address = address;
         this.status = status;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
     }
 }
