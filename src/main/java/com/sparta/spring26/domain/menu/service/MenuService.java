@@ -28,7 +28,7 @@ public class MenuService {
 
         // restaurant 의 user와 받아온 user 검증
         if(!restaurant.getOwner().getId().equals(user.getId())) {
-            new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
+            throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
         // 등록
