@@ -261,7 +261,7 @@ public class MenuServiceTest {
     @Nested
     class GetMenusTest {
         @Test
-        void 메뉴_목록_가져오기_성공() {
+        void 메뉴_조회_성공() {
             // given
             Long restaurantId = 1L;
 
@@ -289,6 +289,21 @@ public class MenuServiceTest {
             assertEquals("Menu3", result.get(2).getName());
             assertEquals("Menu4", result.get(3).getName());
             assertEquals("Menu5", result.get(4).getName());
+        }
+
+        @Test
+        void 메뉴_조회중_가게가_존재하지_않는_예외() {
+            // given
+            Long restaurantId = 1L;
+
+            // 가게가 존재하지 않는 경우
+            given(restaurantRepository.findById(anyLong())).willReturn(Optional.empty());
+
+            // when
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> menuService.getMenus(restaurantId));
+
+            // then
+            assertEquals(ExceptionCode.RESTAURANT_NOT_FOUND.getMessage(), exception.getMessage());
         }
     }
 }
