@@ -4,6 +4,7 @@ import com.sparta.spring26.domain.menu.entity.Menu;
 import com.sparta.spring26.domain.order.entity.Order;
 import com.sparta.spring26.domain.restaurant.dto.request.RestaurantRequestDto;
 import com.sparta.spring26.domain.restaurant.dto.request.RestaurantUpdateDto;
+import com.sparta.spring26.domain.restaurant.enums.RestaurantCategory;
 import com.sparta.spring26.domain.restaurant.enums.RestaurantStatus;
 import com.sparta.spring26.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -37,6 +38,10 @@ public class Restaurant {
     @Column(nullable = false)
     private RestaurantStatus status;
 
+    @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
+    private RestaurantCategory category;
+
     @Column(nullable = false)
     private LocalTime openTime;
 
@@ -64,6 +69,7 @@ public class Restaurant {
         this.closeTime = requestDto.getCloseTime();
         this.address = requestDto.getAddress();
         this.owner = user;
+        this.category = requestDto.getCategory();
         this.status = RestaurantStatus.OPEN;
     }
 
@@ -85,6 +91,9 @@ public class Restaurant {
         }
         if (updateDto.getAddress() != null) {
             this.address = updateDto.getAddress();
+        }
+        if (updateDto.getCategory() != null) {
+            this.category = updateDto.getCategory();
         }
     }
 
