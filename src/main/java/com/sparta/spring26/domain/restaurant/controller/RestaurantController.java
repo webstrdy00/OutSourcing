@@ -8,10 +8,9 @@ import com.sparta.spring26.domain.restaurant.dto.response.RestaurantResponseList
 import com.sparta.spring26.domain.restaurant.enums.RestaurantCategory;
 import com.sparta.spring26.domain.restaurant.service.RestaurantService;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.global.dto.ApiResponse;
 import com.sparta.spring26.global.security.UserDetailsImpl;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

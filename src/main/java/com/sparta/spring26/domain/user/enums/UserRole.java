@@ -1,4 +1,4 @@
-package com.sparta.spring26.domain.user.entity;
+package com.sparta.spring26.domain.user.enums;
 
 public enum UserRole {
     USER(Authority.USER),  // 사용자 권한

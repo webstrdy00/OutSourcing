@@ -2,7 +2,9 @@ package com.sparta.spring26.domain.user.entity;
 
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.domain.user.dto.UserRequestDto;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.domain.user.enums.UserStatus;
+import com.sparta.spring26.domain.userAddress.entity.UserAddress;
 import com.sparta.spring26.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -40,6 +42,9 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserAddress> addressList = new ArrayList<>();
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Restaurant> restaurantList = new ArrayList<>();
 
@@ -64,4 +69,30 @@ public class User extends BaseTimeEntity {
         this.status = UserStatus.ACTIVE;
     }
 
+    public void addAddress(UserAddress address) {
+        this.addressList.add(address);
+        address.setUser(this);
+    }
+
+    public void removeAddress(UserAddress address) {
+        this.addressList.remove(address);
+        address.setUser(null);
+    }
+
+    public void setPrimaryAddress(UserAddress newPrimaryAddress){
+        addressList.forEach(address ->{
+            if (address.equals(newPrimaryAddress)){
+                address.markAsPrimary();
+            }else {
+                address.unmarkAsPrimary();
+            }
+        });
+    }
+
+    public UserAddress getPrimaryAddress(){
+        return addressList.stream()
+                .filter(UserAddress::isPrimary)
+                .findFirst()
+                .orElse(null);
+    }
 }

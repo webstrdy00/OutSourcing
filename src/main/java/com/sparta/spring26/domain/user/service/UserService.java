@@ -4,9 +4,10 @@ import com.sparta.spring26.domain.user.dto.LoginRequestDto;
 import com.sparta.spring26.domain.user.dto.UserRequestDto;
 import com.sparta.spring26.domain.user.dto.UserResponseDto;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.domain.user.enums.UserStatus;
 import com.sparta.spring26.domain.user.repository.UserRepository;
+import com.sparta.spring26.domain.userAddress.entity.UserAddress;
 import com.sparta.spring26.global.exception.CustomException;
 import com.sparta.spring26.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,15 @@ public class UserService {
 
         User user = new User(requestDto, password, role);
 
+        if (requestDto.getAddresses() != null && !requestDto.getAddresses().isEmpty()){
+            for (String address : requestDto.getAddresses()){
+                UserAddress userAddress = new UserAddress(address, user);
+                user.addAddress(userAddress);
+            }
+            // 첫 번쨰 주소를 기본 주소로 설정
+            user.setPrimaryAddress(user.getAddressList().get(0));
+        }
+
         User saveUser = userRepository.save(user);
 
         return new UserResponseDto(saveUser);
@@ -79,5 +89,17 @@ public class UserService {
         user.deactivate();
 
         return userId;
+    }
+
+    // 기본 주소 설정
+    public void setPrimaryAddress(Long id, Long addressId) {
+
+    }
+    @Transactional(readOnly = true)
+    public Object getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return new UserResponseDto(user);
     }
 }

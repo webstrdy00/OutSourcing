@@ -9,7 +9,7 @@ import com.sparta.spring26.domain.restaurant.enums.RestaurantCategory;
 import com.sparta.spring26.domain.restaurant.enums.RestaurantStatus;
 import com.sparta.spring26.domain.restaurant.repository.RestaurantRepository;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.domain.user.repository.UserRepository;
 import com.sparta.spring26.global.exception.CustomException;
 import com.sparta.spring26.global.exception.ErrorCode;
