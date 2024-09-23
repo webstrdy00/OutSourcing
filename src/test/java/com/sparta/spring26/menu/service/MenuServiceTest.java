@@ -76,6 +76,8 @@ public class MenuServiceTest {
             String category = "main";
             Integer price = 50000;
 
+            given(restaurantRepository.findById(anyLong())).willReturn(Optional.empty());
+
             // when
             IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> menuService.createMenu(user, restaurantId, name, category, price));
 
@@ -145,6 +147,28 @@ public class MenuServiceTest {
             assertEquals(newPrice, menu.getPrice());
             assertEquals(newPopularity, menu.getPopularity());
             assertEquals(newStatus, menu.getStatus());
+        }
+
+        @Test
+        void 메뉴_업데이트중_메뉴가_존재하지_않는_예외() {
+            // given
+            User user = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+            ReflectionTestUtils.setField(user, "id", 1L);
+            Long restaurantId = 1L;
+            Long menuId = 1L;
+            String name = "menuName";
+            String category = "main";
+            Integer price = 50000;
+            Boolean popularity = true;
+            MenuStatus status = MenuStatus.AVAILABLE;
+
+            given(menuRepository.findById(anyLong())).willReturn(Optional.empty());
+
+            // when
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> menuService.updateMenu(user, restaurantId, menuId, name, category, price, popularity, status));
+
+            // then
+            assertEquals(ExceptionCode.MENU_NOT_FOUND.getMessage(), exception.getMessage());
         }
     }
 }
