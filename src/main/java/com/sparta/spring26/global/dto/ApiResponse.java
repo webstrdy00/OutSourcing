@@ -35,7 +35,7 @@ public class ApiResponse<T> {
     }
 
     public static ApiResponse<?> successWithNoContent() {
-        return new ApiResponse<>(Status.SUCCESS, null, "요청이 성공적으로 처리되었지만 내용이 없습니다");
+        return new ApiResponse<>(Status.SUCCESS, null, "요청이 성공적으로 처리되었습니다");
     }
 
     public static ApiResponse<?> fail(BindingResult bindingResult) {

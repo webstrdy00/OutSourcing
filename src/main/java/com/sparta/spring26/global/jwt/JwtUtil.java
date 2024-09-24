@@ -129,11 +129,6 @@ public class JwtUtil {
         throw new NullPointerException("Not Found Token");
     }
 
-    public String getRefreshFromHeader(HttpServletRequest request) {
-        String token = request.getHeader(REFRESH_HEADER);
-        return token;
-    }
-
 
     // 토큰 검증
     public boolean validateToken(String token) {

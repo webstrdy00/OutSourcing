@@ -27,8 +27,8 @@ public class MenuService {
                 new IllegalArgumentException(ExceptionCode.RESTAURANT_NOT_FOUND.getMessage()));
 
         // restaurant 의 user와 받아온 user 검증
-        if(!restaurant.getOwner().equals(user)) {
-            new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
+        if(!restaurant.getOwner().getId().equals(user.getId())) {
+            throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
         // 등록
@@ -43,7 +43,7 @@ public class MenuService {
             String name,
             String category,
             Integer price,
-            Boolean popularity,
+            boolean popularity,
             MenuStatus status) {
         // id값 검증
         Menu menu = menuRepository.findById(id).orElseThrow(() ->
@@ -59,10 +59,11 @@ public class MenuService {
         }
 
         // restaurant 의 user와 받아온 user 검증
-        if(!restaurant.getOwner().equals(user)) {
+        if(!restaurant.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
+        // 수정
         menu.update(name, price, category, popularity, status);
     }
 
@@ -90,7 +91,7 @@ public class MenuService {
         }
 
         // restaurant 의 user와 받아온 user 검증
-        if(!restaurant.getOwner().equals(user)) {
+        if(!restaurant.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
