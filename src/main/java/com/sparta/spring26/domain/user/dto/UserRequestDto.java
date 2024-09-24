@@ -1,5 +1,6 @@
 package com.sparta.spring26.domain.user.dto;
 
+import com.sparta.spring26.domain.user.entity.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -18,6 +19,8 @@ public class UserRequestDto {
     private String password;
 
     private String phone;
+
+    private UserRole userRole;
 
     private boolean owner = false;
     private String ownerToken = "";

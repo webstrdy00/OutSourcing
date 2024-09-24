@@ -36,7 +36,7 @@ public class RestaurantController {
      */
     @Secured(UserRole.Authority.OWNER)   // 사장 권한만 접근 가능
     @PostMapping
-    public ResponseEntity<RestaurantResponseDto> createRestaurant(@Valid @RequestBody RestaurantRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails, BindingResult bindingResult){
+    public ResponseEntity<RestaurantResponseDto> createRestaurant(@Valid @RequestBody RestaurantRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         User user = userDetails.getUser();
         RestaurantResponseDto createRestaurant = restaurantService.createRestaurant(requestDto, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createRestaurant);
@@ -62,7 +62,7 @@ public class RestaurantController {
      * @param restaurantsId
      * @return 상태 코드 200, 가게 정보
      */
-    @GetMapping("{restaurantsId}")
+    @GetMapping("/{restaurantsId}")
     public ResponseEntity<RestaurantResponseDto> getRestaurant(@PathVariable Long restaurantsId){
         RestaurantResponseDto restaurant = restaurantService.getRestaurant(restaurantsId);
         return ResponseEntity.ok(restaurant);

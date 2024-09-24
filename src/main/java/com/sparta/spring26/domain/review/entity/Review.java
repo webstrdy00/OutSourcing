@@ -1,12 +1,17 @@
 package com.sparta.spring26.domain.review.entity;
 
 import com.sparta.spring26.domain.menu.entity.Menu;
+import com.sparta.spring26.domain.order.entity.Order;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Setter
+@Getter
 @Table(name = "reviews")
 public class Review extends BaseTimeEntity {
     @Id
@@ -17,10 +22,7 @@ public class Review extends BaseTimeEntity {
     private Integer rating;
 
     @Column(nullable = false)
-    private String content;
-
-    @Column(nullable = false, length = 100)
-    private String status;
+    private String contents;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
@@ -33,4 +35,8 @@ public class Review extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
     private Menu menu;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 }

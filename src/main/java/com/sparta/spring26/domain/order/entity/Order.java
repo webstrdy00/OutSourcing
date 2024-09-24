@@ -7,32 +7,45 @@ import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Setter
 @Getter
+@NoArgsConstructor
 @Table(name = "orders")
 public class Order extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
-
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
-
-    @Column(nullable = false)
-    private Integer totalPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id", nullable = false)
     private Menu menu;
+
+    @Column(nullable = false)
+    private int totalPrice;
+
+    @Column(nullable = false)
+    private int quantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;
+
 }
+
+
