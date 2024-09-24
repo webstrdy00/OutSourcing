@@ -41,6 +41,8 @@ User -----< Review
 
 ### 1. 사용자 관련 API
 
+- **공통 URL**: '/delivery/'
+
 #### 회원가입
 - **URL**: `/users/signup`
 - **Method**: `POST`
