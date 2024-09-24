@@ -146,7 +146,7 @@ public class MenuServiceTest {
             assertEquals(newName, menu.getName());
             assertEquals(newCategory, menu.getCategory());
             assertEquals(newPrice, menu.getPrice());
-            assertEquals(newPopularity, menu.getPopularity());
+            assertEquals(newPopularity, menu.isPopularity());
             assertEquals(newStatus, menu.getStatus());
         }
 
@@ -160,7 +160,7 @@ public class MenuServiceTest {
             String name = "menuName";
             String category = "main";
             Integer price = 50000;
-            Boolean popularity = true;
+            boolean popularity = true;
             MenuStatus status = MenuStatus.AVAILABLE;
 
             given(menuRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -183,7 +183,7 @@ public class MenuServiceTest {
             String name = "menuName";
             String category = "main";
             Integer price = 50000;
-            Boolean popularity = true;
+            boolean popularity = true;
             MenuStatus status = MenuStatus.AVAILABLE;
 
             Menu menu = new Menu(new Restaurant(new RestaurantRequestDto(), user), name, price, category);
@@ -209,7 +209,7 @@ public class MenuServiceTest {
             String name = "menuName";
             String category = "main";
             Integer price = 50000;
-            Boolean popularity = true;
+            boolean popularity = true;
             MenuStatus status = MenuStatus.AVAILABLE;
 
             Restaurant otherRestaurant = new Restaurant(new RestaurantRequestDto(), user);
@@ -241,7 +241,7 @@ public class MenuServiceTest {
             String name = "menuName";
             String category = "main";
             Integer price = 50000;
-            Boolean popularity = true;
+            boolean popularity = true;
             MenuStatus status = MenuStatus.AVAILABLE;
 
             Restaurant restaurant = new Restaurant(new RestaurantRequestDto(), owner);
@@ -303,6 +303,31 @@ public class MenuServiceTest {
 
             // then
             assertEquals(ExceptionCode.RESTAURANT_NOT_FOUND.getMessage(), exception.getMessage());
+        }
+    }
+
+    @Nested
+    class DeleteMenuTest {
+        @Test
+        void 메뉴_삭제_성공() {
+            // given
+            Long menuId = 1L;
+            Long restaurantId = 1L;
+
+            User owner = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+            ReflectionTestUtils.setField(owner, "id", 1L);
+
+            Restaurant restaurant = new Restaurant(new RestaurantRequestDto(), owner);
+            Menu menu = new Menu(restaurant, "menuName", 15000, "Main");
+
+            given(menuRepository.findById(anyLong())).willReturn(Optional.of(menu));
+            given(restaurantRepository.findById(anyLong())).willReturn(Optional.of(restaurant));
+
+            // when
+            menuService.deleteMenu(owner, restaurantId, menuId);
+
+            // then
+            assertEquals(MenuStatus.DELETE, menu.getStatus());
         }
     }
 }

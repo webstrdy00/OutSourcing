@@ -16,7 +16,7 @@ public class GetMenuResponseDto {
         this.name = menu.getName();
         this.price = menu.getPrice();
         this.category = menu.getCategory();
-        this.popularity = menu.getPopularity();
+        this.popularity = menu.isPopularity();
         this.status = menu.getStatus();
     }
 }

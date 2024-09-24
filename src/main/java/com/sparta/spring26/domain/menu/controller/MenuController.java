@@ -40,11 +40,11 @@ public class MenuController {
     /**
      * 메뉴 수정
      */
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> updateMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @PathVariable Long id, @Valid @RequestBody UpdateMenuRequestDto request){
         User user = userDetails.getUser();
 
-        menuService.updateMenu(user, restaurantId, id, request.getName(), request.getCategory(), request.getPrice(), request.getPopularity(), MenuStatus.of(request.getStatus().toUpperCase()));
+        menuService.updateMenu(user, restaurantId, id, request.getName(), request.getCategory(), request.getPrice(), request.isPopularity(), MenuStatus.of(request.getStatus().toUpperCase()));
 
         return ResponseEntity.ok(ApiResponse.successWithNoContent());
     }

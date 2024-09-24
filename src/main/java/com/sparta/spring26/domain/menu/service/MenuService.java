@@ -43,7 +43,7 @@ public class MenuService {
             String name,
             String category,
             Integer price,
-            Boolean popularity,
+            boolean popularity,
             MenuStatus status) {
         // id값 검증
         Menu menu = menuRepository.findById(id).orElseThrow(() ->
