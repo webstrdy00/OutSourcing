@@ -395,5 +395,30 @@ public class MenuServiceTest {
             // then
             assertEquals(ExceptionCode.RESTAURANT_MENU_MISMATCH.getMessage(), exception.getMessage());
         }
+
+        @Test
+        void 메뉴_삭제중_권한이_없는_예외() {
+            // given
+            Long menuId = 1L;
+            Long restaurantId = 1L;
+
+            User user = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+            ReflectionTestUtils.setField(user, "id", 1L);
+
+            User owner = new User(new UserRequestDto(), "$2a$10$Ywucr1lnT4w2XsdwfH9IiO8nOlOaIEFON6jRh1.E3wkhDfcX2j7eK", UserRole.OWNER);
+            ReflectionTestUtils.setField(owner, "id", 2L);
+
+            Restaurant restaurant = new Restaurant(new RestaurantRequestDto(), owner);
+            Menu menu = new Menu(restaurant, "menuName", 15000, "Main");
+
+            given(menuRepository.findById(anyLong())).willReturn(Optional.of(menu));
+            given(restaurantRepository.findById(anyLong())).willReturn(Optional.of(restaurant));
+
+            // when
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> menuService.deleteMenu(user, restaurantId, menuId));
+
+            // then
+            assertEquals(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage(), exception.getMessage());
+        }
     }
 }
