@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class UserAddressService {
     private final UserRepository userRepository;
     private final UserAddressRepository userAddressRepository;
-    
+
     // 사용자 주소 목록 조회
     @Transactional(readOnly = true)
     public List<AddressResponseDto> getUserAddressList(Long userId) {
@@ -31,13 +31,13 @@ public class UserAddressService {
                 .map(AddressResponseDto::new)
                 .collect(Collectors.toList());
     }
-    
+
     // 새로운 주소 추가
     public AddressResponseDto addUserAddress(Long userId, String address) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (user.getAddressList().stream().anyMatch(a -> a.getAddress().equals(address))){
+        if (user.getAddressList().stream().anyMatch(a -> a.getAddress().equals(address))) {
             throw new CustomException(ErrorCode.DUPLICATE_ADDRESS);
         }
 
@@ -71,12 +71,12 @@ public class UserAddressService {
                 .findFirst()
                 .orElseThrow(() -> new CustomException(ErrorCode.ADDRESS_NOT_FOUND));
 
-        if (addressToDelete.isPrimary()){
+        if (addressToDelete.isPrimary()) {
             List<UserAddress> remainAddress = user.getAddressList().stream()
                     .filter(a -> !a.getId().equals(addressId))
                     .collect(Collectors.toList());
 
-            if (!remainAddress.isEmpty()){
+            if (!remainAddress.isEmpty()) {
                 UserAddress newPrimaryAddress = remainAddress.get(0);
                 newPrimaryAddress.markAsPrimary();
             }

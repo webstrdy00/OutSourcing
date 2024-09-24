@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+
 @Getter
 public class PagedResponseDto<T> {
     private List<T> content;
@@ -17,7 +18,7 @@ public class PagedResponseDto<T> {
     private Boolean hasPrevious;     // 이전 버튼
     private Boolean hasNext;     // 다음 버튼
 
-    public PagedResponseDto(Page<T> page){
+    public PagedResponseDto(Page<T> page) {
         this.content = page.getContent();
         this.pageNo = page.getNumber();
         this.pageSize = page.getSize();

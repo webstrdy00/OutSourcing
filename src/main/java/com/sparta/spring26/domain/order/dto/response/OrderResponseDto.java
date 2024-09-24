@@ -1,7 +1,6 @@
 package com.sparta.spring26.domain.order.dto.response;
 
 import com.sparta.spring26.domain.order.OrderStatus;
-import com.sparta.spring26.global.entity.BaseTimeEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

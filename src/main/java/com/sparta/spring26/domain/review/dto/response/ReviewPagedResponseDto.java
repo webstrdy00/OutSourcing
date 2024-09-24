@@ -19,7 +19,7 @@ public class ReviewPagedResponseDto<T> {
     private Boolean hasPrevious;     // 이전 버튼
     private Boolean hasNext;     // 다음 버튼
 
-    public ReviewPagedResponseDto(Page<T> page){
+    public ReviewPagedResponseDto(Page<T> page) {
         this.content = page.getContent();
         this.pageNo = page.getNumber();
         this.pageSize = page.getSize();

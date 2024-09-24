@@ -1,11 +1,10 @@
 package com.sparta.spring26.domain.user.dto;
 
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 public class UserResponseDto {
@@ -17,7 +16,7 @@ public class UserResponseDto {
     private LocalDateTime createAt;
     private LocalDateTime modifiedAt;
 
-    public UserResponseDto(User user){
+    public UserResponseDto(User user) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();

@@ -79,7 +79,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderStatus updateOrderStatus(User user, Long orderId, OrderStatus newStatus){
+    public OrderStatus updateOrderStatus(User user, Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.ORDER_NOT_FOUND.getMessage()));
 

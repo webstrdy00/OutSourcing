@@ -1,9 +1,5 @@
 package com.sparta.spring26.domain.menu.dto;
 
-import com.sparta.spring26.domain.menu.entity.MenuStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

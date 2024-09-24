@@ -52,13 +52,14 @@ public class JwtUtil {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
         key = Keys.hmacShaKeyFor(bytes);
     }
+
     // Access 토큰 생성
-    public String createAccessToken(String email, UserRole role){
+    public String createAccessToken(String email, UserRole role) {
         return createToken(email, role, ACCESS_TOKEN_TIME);
     }
 
     // Refresh 토큰 생성 및 설정
-    public void createAndSetRefreshToken(HttpServletResponse response, User user){
+    public void createAndSetRefreshToken(HttpServletResponse response, User user) {
         String token = createToken(user.getEmail(), user.getRole(), REFRESH_TOKEN_TIME);
         Instant expiryDate = Instant.now().plusMillis(REFRESH_TOKEN_TIME);
 
@@ -69,7 +70,7 @@ public class JwtUtil {
     }
 
     // Refresh 토큰 쿠키에 저장
-    public void setRefreshTokenCookie(HttpServletResponse response, String refreshToken){
+    public void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
         Cookie cookie = new Cookie(REFRESH_HEADER, refreshToken);
 //        cookie.setSecure(true); // HTTPS에서만 사용
         cookie.setPath("/");
@@ -78,19 +79,20 @@ public class JwtUtil {
     }
 
     // Refresh 토큰 쿠키에서 가져오기
-    public Optional<String> getRefreshTokenFromCooke(HttpServletRequest request){
+    public Optional<String> getRefreshTokenFromCooke(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        if (cookies != null){
-            for (Cookie cookie : cookies){
-                if (REFRESH_HEADER.equals(cookie.getName())){
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (REFRESH_HEADER.equals(cookie.getName())) {
                     return Optional.of(cookie.getValue());
                 }
             }
         }
         return Optional.empty();
     }
+
     // Refresh 토큰 업데이트 하기
-    public void updateRefreshToken(RefreshToken refreshToken){
+    public void updateRefreshToken(RefreshToken refreshToken) {
         String token = createToken(refreshToken.getUser().getEmail(), refreshToken.getUser().getRole(), REFRESH_TOKEN_TIME);
         Instant expiryDate = Instant.now().plusMillis(REFRESH_TOKEN_TIME);
 
@@ -99,7 +101,7 @@ public class JwtUtil {
     }
 
     // Refresh 토큰 삭제하기
-    public void deleteRefreshToken(RefreshToken refreshToken){
+    public void deleteRefreshToken(RefreshToken refreshToken) {
         refreshTokenRepository.delete(refreshToken);
     }
 
@@ -108,20 +110,20 @@ public class JwtUtil {
         Date date = new Date();
 
         return Jwts.builder()
-                        .setSubject(email) // 사용자 식별자값(ID)
-                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-                        .setExpiration(new Date(date.getTime() + tokenTime)) // 만료 시간
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+                .setSubject(email) // 사용자 식별자값(ID)
+                .claim(AUTHORIZATION_KEY, role) // 사용자 권한
+                .setExpiration(new Date(date.getTime() + tokenTime)) // 만료 시간
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
     }
 
     // header 에서 JWT 가져오기
     public String getJwtFromHeader(HttpServletRequest request) {
         String token = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)){
-            token =  token.substring(7);
-            while (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)){
+        if (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
+            token = token.substring(7);
+            while (StringUtils.hasText(token) && token.startsWith(BEARER_PREFIX)) {
                 token = token.substring(7);
             }
             return token;

@@ -3,7 +3,6 @@ package com.sparta.spring26.domain.restaurant.dto.request;
 import com.sparta.spring26.domain.restaurant.enums.RestaurantCategory;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter

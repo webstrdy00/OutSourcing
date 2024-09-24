@@ -6,7 +6,6 @@ import com.sparta.spring26.domain.restaurant.enums.RestaurantCategory;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +23,7 @@ public class RestaurantResponseDto {
     private RestaurantCategory category;
     private List<GetMenuResponseDto> menuList;
 
-    public static RestaurantResponseDto fromEntity(Restaurant restaurant){
+    public static RestaurantResponseDto fromEntity(Restaurant restaurant) {
         RestaurantResponseDto dto = new RestaurantResponseDto();
         dto.setId(restaurant.getId());
         dto.setName(restaurant.getName());

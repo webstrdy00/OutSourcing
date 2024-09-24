@@ -7,9 +7,7 @@ import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.domain.user.enums.UserStatus;
 import com.sparta.spring26.domain.user.repository.UserRepository;
-import com.sparta.spring26.domain.userAddress.entity.UserAddress;
 import com.sparta.spring26.global.exception.CustomException;
-import com.sparta.spring26.global.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,9 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;

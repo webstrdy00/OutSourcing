@@ -50,10 +50,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String accessToken = jwtUtil.createAccessToken(user.getEmail(), user.getRole());
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + accessToken);
 
-        
+
         // RefreshToken 생성 및 쿠키에 설정
         jwtUtil.createAndSetRefreshToken(response, user);
-        
+
         log.info("로그인 성공: {}", user.getEmail());
     }
 

@@ -1,6 +1,5 @@
 package com.sparta.spring26.domain.review.controller;
 
-import com.sparta.spring26.domain.restaurant.dto.response.PagedResponseDto;
 import com.sparta.spring26.domain.review.dto.request.ReviewRequestDto;
 import com.sparta.spring26.domain.review.dto.response.ReviewPagedResponseDto;
 import com.sparta.spring26.domain.review.dto.response.ReviewResponseDto;
@@ -25,7 +24,8 @@ public class ReviewController {
 
     /**
      * 리뷰 등록
-     * @param userDetails 인증된 사용자 정보
+     *
+     * @param userDetails      인증된 사용자 정보
      * @param reviewRequestDto 리뷰 요청 데이터
      * @return 리뷰 응답 데이터, 상태 코드 201
      */
@@ -33,7 +33,7 @@ public class ReviewController {
     public ResponseEntity<ReviewResponseDto> createReview(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody ReviewRequestDto reviewRequestDto
-    ){
+    ) {
         User user = userDetails.getUser();
         ReviewResponseDto responseDto = reviewService.createReview(user, reviewRequestDto);
         return ResponseEntity.ok(responseDto);
@@ -41,8 +41,9 @@ public class ReviewController {
 
     /**
      * 리뷰 수정
-     * @param userDetails 인증된 사용자 정보
-     * @param reveiewId 리뷰 ID
+     *
+     * @param userDetails      인증된 사용자 정보
+     * @param reveiewId        리뷰 ID
      * @param reviewRequestDto 수정할 리뷰 데이터
      * @return 수정된 리뷰 응답 데이터, 상태 코드 200
      */
@@ -52,7 +53,7 @@ public class ReviewController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid
             @RequestBody ReviewRequestDto reviewRequestDto
-    ){
+    ) {
         User user = userDetails.getUser();
         ReviewResponseDto responseDto = reviewService.updateReview(user, reveiewId, reviewRequestDto);
         return ResponseEntity.ok(responseDto);
@@ -61,24 +62,26 @@ public class ReviewController {
 
     /**
      * 리뷰 단건 조회
+     *
      * @param reviewId 리뷰 ID
      * @return 리뷰 응답 데이터, 상태 코드 200
      */
     @GetMapping("/{reviewId}")
-    public ResponseEntity<ReviewResponseDto> getReview(@PathVariable Long reviewId){
+    public ResponseEntity<ReviewResponseDto> getReview(@PathVariable Long reviewId) {
         ReviewResponseDto review = reviewService.getReview(reviewId);
         return ResponseEntity.ok(review);
     }
 
     /**
      * 모든 리뷰 조회
+     *
      * @param pageable 페이징 정보
      * @return 리뷰 응답 데이터 리스트, 상태 코드 200
      */
     @GetMapping
     public ResponseEntity<ReviewPagedResponseDto<ReviewResponseDto>> getReviewList(
-            @RequestParam(defaultValue = "0")int page,
-            @RequestParam(defaultValue = "10")int size){
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ReviewResponseDto> reviewPage = reviewService.getReviewList(pageable);
 
@@ -89,7 +92,8 @@ public class ReviewController {
 
     /**
      * 리뷰 삭제
-     * @param reviewId 리뷰 ID
+     *
+     * @param reviewId    리뷰 ID
      * @param userDetails 인증된 사용자 정보
      * @return 상태 코드 204
      */
@@ -97,7 +101,7 @@ public class ReviewController {
     public ResponseEntity<ReviewResponseDto> deleteReview(
             @PathVariable Long reviewId,
             @AuthenticationPrincipal UserDetailsImpl userDetails
-    ){
+    ) {
         User user = userDetails.getUser();
         ReviewResponseDto responseDto = reviewService.deleteReview(reviewId, user);
         return ResponseEntity.ok(responseDto);

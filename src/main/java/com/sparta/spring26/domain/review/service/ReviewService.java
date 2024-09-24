@@ -7,7 +7,6 @@ import com.sparta.spring26.domain.review.dto.response.ReviewResponseDto;
 import com.sparta.spring26.domain.review.entity.Review;
 import com.sparta.spring26.domain.review.repository.ReviewRepository;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.global.exception.ErrorCode;
 import com.sparta.spring26.global.exception.ExceptionCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -25,13 +25,13 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    public RefreshToken(User user, String token, Instant expiryDate){
+    public RefreshToken(User user, String token, Instant expiryDate) {
         this.user = user;
         this.token = token;
         this.expiryDate = expiryDate;
     }
 
-    public void updateToken(String token, Instant expiryDate){
+    public void updateToken(String token, Instant expiryDate) {
         this.token = token;
         this.expiryDate = expiryDate;
     }

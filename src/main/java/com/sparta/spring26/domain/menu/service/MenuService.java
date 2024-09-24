@@ -27,7 +27,7 @@ public class MenuService {
                 new IllegalArgumentException(ExceptionCode.RESTAURANT_NOT_FOUND.getMessage()));
 
         // restaurant 의 user와 받아온 user 검증
-        if(!restaurant.getOwner().getId().equals(user.getId())) {
+        if (!restaurant.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
@@ -54,12 +54,12 @@ public class MenuService {
                 new IllegalArgumentException(ExceptionCode.RESTAURANT_NOT_FOUND.getMessage()));
 
         // restaurant의 menu인지 검증
-        if(!menu.getRestaurant().equals(restaurant)) {
+        if (!menu.getRestaurant().equals(restaurant)) {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_MENU_MISMATCH.getMessage());
         }
 
         // restaurant 의 user와 받아온 user 검증
-        if(!restaurant.getOwner().getId().equals(user.getId())) {
+        if (!restaurant.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
@@ -86,12 +86,12 @@ public class MenuService {
                 new IllegalArgumentException(ExceptionCode.RESTAURANT_NOT_FOUND.getMessage()));
 
         // restaurant의 menu인지 검증
-        if(!menu.getRestaurant().equals(restaurant)) {
+        if (!menu.getRestaurant().equals(restaurant)) {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_MENU_MISMATCH.getMessage());
         }
 
         // restaurant 의 user와 받아온 user 검증
-        if(!restaurant.getOwner().getId().equals(user.getId())) {
+        if (!restaurant.getOwner().getId().equals(user.getId())) {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 

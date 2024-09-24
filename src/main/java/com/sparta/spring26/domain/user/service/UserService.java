@@ -46,8 +46,8 @@ public class UserService {
 
         User user = new User(requestDto, password, role);
 
-        if (requestDto.getAddresses() != null && !requestDto.getAddresses().isEmpty()){
-            for (String address : requestDto.getAddresses()){
+        if (requestDto.getAddresses() != null && !requestDto.getAddresses().isEmpty()) {
+            for (String address : requestDto.getAddresses()) {
                 UserAddress userAddress = new UserAddress(address, user);
                 user.addAddress(userAddress);
             }
@@ -66,7 +66,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
-        if (!passwordEncoder.matches(password, user.getPassword())){
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 틀립니다.");
         }
 
@@ -78,11 +78,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        if (user.getStatus() == UserStatus.INACTIVE){
+        if (user.getStatus() == UserStatus.INACTIVE) {
             throw new CustomException(ErrorCode.ALREADY_DEACTIVATED_USER);
         }
 
-        if (!passwordEncoder.matches(password, user.getPassword())){
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD);
         }
 
@@ -90,6 +90,7 @@ public class UserService {
 
         return userId;
     }
+
     @Transactional(readOnly = true)
     public Object getUserInfo(Long userId) {
         User user = userRepository.findById(userId)

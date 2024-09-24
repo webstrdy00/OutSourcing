@@ -12,7 +12,7 @@ public class RestaurantResponseListDto {
     private String description;
     private Integer minDeliveryPrice;
 
-    public static RestaurantResponseListDto fromEntity(Restaurant restaurant){
+    public static RestaurantResponseListDto fromEntity(Restaurant restaurant) {
         RestaurantResponseListDto dto = new RestaurantResponseListDto();
         dto.setId(restaurant.getId());
         dto.setName(restaurant.getName());

@@ -3,7 +3,6 @@ package com.sparta.spring26.global.security;
 import com.sparta.spring26.domain.token.entity.RefreshToken;
 import com.sparta.spring26.domain.token.repository.RefreshTokenRepository;
 import com.sparta.spring26.global.jwt.JwtUtil;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,7 +53,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             } else if (StringUtils.hasText(refreshToken) && jwtUtil.validateRefreshToken(refreshToken)) {
                 // AccessToken 이 만료되었지만 RefreshToken 이 유효한 경우
                 Optional<RefreshToken> tokenOpt = refreshTokenRepository.findByToken(refreshToken);
-                if (tokenOpt.isPresent()){
+                if (tokenOpt.isPresent()) {
                     RefreshToken token = tokenOpt.get();
                     String email = token.getUser().getEmail();
                     UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(email);

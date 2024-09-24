@@ -79,17 +79,17 @@ public class User extends BaseTimeEntity {
         address.setUser(null);
     }
 
-    public void setPrimaryAddress(UserAddress newPrimaryAddress){
-        addressList.forEach(address ->{
-            if (address.equals(newPrimaryAddress)){
+    public void setPrimaryAddress(UserAddress newPrimaryAddress) {
+        addressList.forEach(address -> {
+            if (address.equals(newPrimaryAddress)) {
                 address.markAsPrimary();
-            }else {
+            } else {
                 address.unmarkAsPrimary();
             }
         });
     }
 
-    public UserAddress getPrimaryAddress(){
+    public UserAddress getPrimaryAddress() {
         return addressList.stream()
                 .filter(UserAddress::isPrimary)
                 .findFirst()

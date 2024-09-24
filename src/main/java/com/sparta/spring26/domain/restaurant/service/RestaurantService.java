@@ -54,7 +54,7 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
-        if (!restaurant.getOwner().getId().equals(userId)){
+        if (!restaurant.getOwner().getId().equals(userId)) {
             throw new CustomException(ErrorCode.NOT_RESTAURANT_OWNER);
         }
 
@@ -62,28 +62,28 @@ public class RestaurantService {
 
         return RestaurantResponseDto.fromEntity(restaurant);
     }
-    
+
     // 가게 단건 조회
     @Transactional(readOnly = true)
     public RestaurantResponseDto getRestaurant(Long restaurantsId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
-        if (restaurant.getStatus() == RestaurantStatus.CLOSED){
+        if (restaurant.getStatus() == RestaurantStatus.CLOSED) {
             throw new CustomException(ErrorCode.RESTAURANT_CLOSED);
         }
 
         return RestaurantResponseDto.fromEntity(restaurant);
     }
-    
+
     // 가게 목록 조회
     @Transactional(readOnly = true)
     public Page<RestaurantResponseListDto> getRestaurantList(String name, RestaurantCategory category, Pageable pageable) {
         Page<Restaurant> restaurantPage;
-        if (name != null && !name.isEmpty()){
-            if (category != null){
+        if (name != null && !name.isEmpty()) {
+            if (category != null) {
                 restaurantPage = restaurantRepository.findByNameContainingIgnoreCaseAndCategoryAndStatus(name, category, RestaurantStatus.OPEN, pageable);
-            }else {
+            } else {
                 restaurantPage = restaurantRepository.findByNameContainingIgnoreCaseAndStatus(name, RestaurantStatus.OPEN, pageable);
             }
         } else if (category != null) {
@@ -103,7 +103,7 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
-        if (!restaurant.getOwner().getId().equals(userId)){
+        if (!restaurant.getOwner().getId().equals(userId)) {
             throw new CustomException(ErrorCode.NOT_RESTAURANT_OWNER);
         }
 

@@ -11,7 +11,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +60,7 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menuList = new ArrayList<>();
 
-    public Restaurant(RestaurantRequestDto requestDto, User user){
+    public Restaurant(RestaurantRequestDto requestDto, User user) {
         this.name = requestDto.getName();
         this.description = requestDto.getDescription();
         this.minDeliveryPrice = requestDto.getMinDeliveryPrice();

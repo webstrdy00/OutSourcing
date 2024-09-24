@@ -13,8 +13,9 @@ import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.domain.user.enums.UserStatus;
 import com.sparta.spring26.domain.user.repository.UserRepository;
 import com.sparta.spring26.global.exception.CustomException;
-import com.sparta.spring26.global.exception.ErrorCode;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -49,10 +50,10 @@ class RestaurantServiceTest {
 
     @Nested
     @DisplayName("가게 생성 테스트")
-    class createRestaurantTest{
+    class createRestaurantTest {
         @Test
         @DisplayName("가게 생성 성공 테스트")
-        void createRestaurant_Success(){
+        void createRestaurant_Success() {
             // given
             User owner = new User();
             ReflectionTestUtils.setField(owner, "id", 1L);
@@ -91,7 +92,7 @@ class RestaurantServiceTest {
 
         @Test
         @DisplayName("가게 생성 실패 테스트 - 사용자가 존재하지 않음")
-        void createRestaurant_UserNotFound(){
+        void createRestaurant_UserNotFound() {
             // given
             RestaurantRequestDto requestDto = new RestaurantRequestDto();
             given(userRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -104,7 +105,7 @@ class RestaurantServiceTest {
 
         @Test
         @DisplayName("가게 생성 실패 테스트 - 사용자 권한이 OWNER가 아님")
-        void createRestaurant_NotOwner(){
+        void createRestaurant_NotOwner() {
             // given
             User notOwner = new User();
             ReflectionTestUtils.setField(notOwner, "id", 1L);
@@ -121,7 +122,7 @@ class RestaurantServiceTest {
 
         @Test
         @DisplayName("가게 생성 실패 테스트 - 최대 가게 수 초과")
-        void createRestaurant_MaxRestaurantLimitExceeded(){
+        void createRestaurant_MaxRestaurantLimitExceeded() {
             // given
             User owner = new User();
             ReflectionTestUtils.setField(owner, "id", 1L);
@@ -140,10 +141,10 @@ class RestaurantServiceTest {
 
     @Nested
     @DisplayName("가게 정보 수정 테스트")
-    class updateRestaurantPartialTest{
+    class updateRestaurantPartialTest {
         @Test
         @DisplayName("가게 정보 수정 성공 테스트")
-         void updateRestaurant_Success(){
+        void updateRestaurant_Success() {
             // given
             User owner = new User();
             ReflectionTestUtils.setField(owner, "id", 1L);
@@ -192,7 +193,7 @@ class RestaurantServiceTest {
 
         @Test
         @DisplayName("가게 정보 수정 실패 테스트 - 사용자가 존재하지 않음")
-        void updateRestaurant_UserNotFound(){
+        void updateRestaurant_UserNotFound() {
             // given
             RestaurantUpdateDto updateDto = new RestaurantUpdateDto();
             given(userRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -205,7 +206,7 @@ class RestaurantServiceTest {
 
         @Test
         @DisplayName("가게 정보 수정 실패 테스트 - 가게가 존재하지 않음")
-        void updateRestaurant_RestaurantNotFound(){
+        void updateRestaurant_RestaurantNotFound() {
             // given
             User owner = new User();
             ReflectionTestUtils.setField(owner, "id", 1L);
@@ -223,7 +224,7 @@ class RestaurantServiceTest {
 
         @Test
         @DisplayName("가게 정보 수정 실패 테스트 - 권한 없음")
-        void updateRestaurant_NotOwner(){
+        void updateRestaurant_NotOwner() {
             // given
             User owner = new User();
             ReflectionTestUtils.setField(owner, "id", 1L);
@@ -250,10 +251,10 @@ class RestaurantServiceTest {
 
     @Nested
     @DisplayName("가게 단건 조회 테스트")
-    class GetRestaurantTest{
+    class GetRestaurantTest {
         @Test
         @DisplayName("가게 단건 조회 성공 테스트")
-        void getRestaurant_Success(){
+        void getRestaurant_Success() {
             // given
             User owner = new User();
             ReflectionTestUtils.setField(owner, "id", 1L);
@@ -323,7 +324,7 @@ class RestaurantServiceTest {
 
     @Nested
     @DisplayName("가게 목록 조회 테스트")
-    class GetRestaurantListTest{
+    class GetRestaurantListTest {
         @Test
         @DisplayName("가게 목록 조회 성공 테스트 - 모든 가게")
         void getRestaurantList_AllRestaurants_Success() {
@@ -582,7 +583,7 @@ class RestaurantServiceTest {
 
     @Nested
     @DisplayName("가게 폐업 성공 테스트")
-    class closeRestaurantTest{
+    class closeRestaurantTest {
         @Test
         @DisplayName("가게 폐업 성공 테스트")
         void closeRestaurant_Success() {

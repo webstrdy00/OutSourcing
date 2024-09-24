@@ -12,8 +12,8 @@ import com.sparta.spring26.global.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class MenuController {
      * 메뉴 등록
      */
     @PostMapping
-    public ResponseEntity<ApiResponse<?>> createMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @Valid @RequestBody CreateMenuRequestDto request){
+    public ResponseEntity<ApiResponse<?>> createMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @Valid @RequestBody CreateMenuRequestDto request) {
         User user = userDetails.getUser();
 
         menuService.createMenu(user, restaurantId, request.getName(), request.getCategory(), request.getPrice());
@@ -41,7 +41,7 @@ public class MenuController {
      * 메뉴 수정
      */
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> updateMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @PathVariable Long id, @Valid @RequestBody UpdateMenuRequestDto request){
+    public ResponseEntity<ApiResponse<?>> updateMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @PathVariable Long id, @Valid @RequestBody UpdateMenuRequestDto request) {
         User user = userDetails.getUser();
 
         menuService.updateMenu(user, restaurantId, id, request.getName(), request.getCategory(), request.getPrice(), request.isPopularity(), MenuStatus.of(request.getStatus().toUpperCase()));
@@ -53,7 +53,7 @@ public class MenuController {
      * 메뉴 다건 조회
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getmenus(@PathVariable Long restaurantId){
+    public ResponseEntity<ApiResponse<?>> getmenus(@PathVariable Long restaurantId) {
         List<Menu> menuList = menuService.getMenus(restaurantId);
 
         List<GetMenuResponseDto> menuResponseDtoList = new ArrayList<>();
@@ -68,7 +68,7 @@ public class MenuController {
      * 메뉴 삭제
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<?>> deleteMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @PathVariable Long id){
+    public ResponseEntity<ApiResponse<?>> deleteMenu(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long restaurantId, @PathVariable Long id) {
         User user = userDetails.getUser();
 
         menuService.deleteMenu(user, restaurantId, id);

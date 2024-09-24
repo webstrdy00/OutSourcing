@@ -11,9 +11,7 @@ import com.sparta.spring26.domain.review.entity.Review;
 import com.sparta.spring26.domain.review.repository.ReviewRepository;
 import com.sparta.spring26.domain.review.service.ReviewService;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.global.exception.ErrorCode;
 import com.sparta.spring26.global.exception.ExceptionCode;
-import org.aspectj.util.Reflection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -56,17 +54,17 @@ class ReviewServiceTest {
         MockitoAnnotations.openMocks(this);
 
         user = new User();
-        ReflectionTestUtils.setField(user,"id", 1L);
-        ReflectionTestUtils.setField(user,"name", "testUser");
+        ReflectionTestUtils.setField(user, "id", 1L);
+        ReflectionTestUtils.setField(user, "name", "testUser");
 
         order = new Order();
-        ReflectionTestUtils.setField(order,"id", 1L);
+        ReflectionTestUtils.setField(order, "id", 1L);
         order.setUser(user);
         order.setStatus(OrderStatus.DELIVERYED);
 
         restaurant = new Restaurant();
-        ReflectionTestUtils.setField(restaurant,"id",1L);
-        ReflectionTestUtils.setField(restaurant, "name","Test Restaurant");
+        ReflectionTestUtils.setField(restaurant, "id", 1L);
+        ReflectionTestUtils.setField(restaurant, "name", "Test Restaurant");
 
         menu = new Menu();
         ReflectionTestUtils.setField(menu, "id", 1L);
@@ -80,9 +78,8 @@ class ReviewServiceTest {
         review.setOrder(order);
 
 
-
         requestDto = new ReviewRequestDto();
-        ReflectionTestUtils.setField(requestDto,"contents", "test review");
+        ReflectionTestUtils.setField(requestDto, "contents", "test review");
         ReflectionTestUtils.setField(requestDto, "rating", 5);
         ReflectionTestUtils.setField(requestDto, "menuId", 1L);
         ReflectionTestUtils.setField(requestDto, "restaurantId", 1L);
@@ -96,7 +93,7 @@ class ReviewServiceTest {
         ReviewResponseDto responseDto = reviewService.createReview(user, requestDto);
 
         assertNotNull(responseDto);
-        assertEquals(review.getId(),responseDto.getId());
+        assertEquals(review.getId(), responseDto.getId());
         verify(reviewRepository, times(1)).save(any(Review.class));
     }
 
@@ -160,7 +157,7 @@ class ReviewServiceTest {
     @Test
     void 리뷰수정_권한없음() {
         User otherUser = new User();
-        ReflectionTestUtils.setField(otherUser,"id", 2L);
+        ReflectionTestUtils.setField(otherUser, "id", 2L);
         review.setUser(otherUser);
 
         when(reviewRepository.findById(anyLong())).thenReturn(Optional.of(review));
@@ -195,7 +192,7 @@ class ReviewServiceTest {
 
     @Test
     void 리뷰_다건_조회_성공() {
-        Pageable pageable = PageRequest.of(0,10);
+        Pageable pageable = PageRequest.of(0, 10);
         Page<Review> reviewPage = new PageImpl<>(Collections.singletonList(review));
 
         when(reviewRepository.findAll(pageable)).thenReturn(reviewPage);

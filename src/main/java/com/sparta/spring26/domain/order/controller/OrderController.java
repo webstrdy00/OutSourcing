@@ -11,10 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/delivery/order")
@@ -26,7 +23,8 @@ public class OrderController {
 
     /**
      * 주문 등록
-     * @param userDetails 인증된 사용자 정보
+     *
+     * @param userDetails           인증된 사용자 정보
      * @param orderCreateRequestDto 주문 생성 요청 데이터
      * @return 주문 응답 데이터, 상태 코드 201
      */
@@ -51,8 +49,9 @@ public class OrderController {
 
     /**
      * 주문 상태 업데이트
-     * @param userDetails 인증된 사용자 정보
-     * @param orderId 주문 ID
+     *
+     * @param userDetails            인증된 사용자 정보
+     * @param orderId                주문 ID
      * @param statusUpdateRequestDto 상태 업데이트 요청 데이터
      * @return 업데이트된 주문 응답 데이터, 상태 코드 200
      */
@@ -68,6 +67,7 @@ public class OrderController {
 
     /**
      * 주문 상세 조회
+     *
      * @param orderId 주문 ID
      * @return 주문 응답 데이터, 상태 코드 200
      */
@@ -79,6 +79,7 @@ public class OrderController {
 
     /**
      * 주문 삭제
+     *
      * @param orderId 주문 ID
      * @return 상태 코드 204 (No content)
      */

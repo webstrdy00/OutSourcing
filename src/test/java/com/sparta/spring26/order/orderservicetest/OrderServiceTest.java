@@ -11,7 +11,7 @@ import com.sparta.spring26.domain.order.service.OrderService;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
 import com.sparta.spring26.domain.restaurant.repository.RestaurantRepository;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.global.exception.ExceptionCode;
 import com.sparta.spring26.global.security.UserDetailsImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,11 +21,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
