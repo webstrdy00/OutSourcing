@@ -58,7 +58,7 @@ public class RestaurantController {
      * @return RestaurantResponseDto, 상태코드 200
      */
     @Secured(UserRole.Authority.OWNER)   // 사장 권한만 접근 가능
-    @DeleteMapping("/{restaurantsId}")
+    @PatchMapping("/{restaurantsId}")
     public ResponseEntity<ApiResponse<?>> updateRestaurantPartial(@PathVariable Long restaurantsId, @RequestBody RestaurantUpdateDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         RestaurantResponseDto updateRestaurant = restaurantService.updateRestaurantPartial(restaurantsId, updateDto, user.getId());
@@ -103,7 +103,7 @@ public class RestaurantController {
      * @return
      */
     @Secured(UserRole.Authority.OWNER)   // 사장 권한만 접근 가능
-    @PatchMapping("/{restaurantsId}/close")
+    @DeleteMapping("/{restaurantsId}/close")
     public ResponseEntity<ApiResponse<?>> closeRestaurant(@PathVariable Long restaurantsId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
         restaurantService.closeRestaurant(restaurantsId, user.getId());
