@@ -25,7 +25,7 @@ public class UpdateMenuRequestDto {
     @NotBlank
     private String category;
 
-    private Boolean popularity;
+    private boolean popularity;
 
     @NotBlank
     private String status;
