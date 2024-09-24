@@ -35,7 +35,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind'
-
+    // Spring Security Test 의존성 추가
+    testImplementation 'org.springframework.security:spring-security-test'
 
 
     // Security

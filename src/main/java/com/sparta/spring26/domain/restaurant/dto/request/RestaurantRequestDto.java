@@ -5,11 +5,13 @@ import com.sparta.spring26.domain.restaurant.enums.RestaurantCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
+@Setter
 public class RestaurantRequestDto {
     @NotBlank(message = "이름은 필수입니다.")
     private String name;

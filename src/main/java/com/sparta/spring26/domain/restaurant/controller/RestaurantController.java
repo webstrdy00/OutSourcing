@@ -41,7 +41,7 @@ public class RestaurantController {
     public ResponseEntity<ApiResponse<?>> createRestaurant(@Valid @RequestBody RestaurantRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails, BindingResult bindingResult) {
         try {
             User user = userDetails.getUser();
-            RestaurantResponseDto createRestaurant = restaurantService.createRestaurant(requestDto, user);
+            RestaurantResponseDto createRestaurant = restaurantService.createRestaurant(requestDto, user.getId());
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(createRestaurant));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -61,7 +61,7 @@ public class RestaurantController {
     @DeleteMapping("/{restaurantsId}")
     public ResponseEntity<ApiResponse<?>> updateRestaurantPartial(@PathVariable Long restaurantsId, @RequestBody RestaurantUpdateDto updateDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        RestaurantResponseDto updateRestaurant = restaurantService.updateRestaurantPartial(restaurantsId, updateDto, user);
+        RestaurantResponseDto updateRestaurant = restaurantService.updateRestaurantPartial(restaurantsId, updateDto, user.getId());
         return ResponseEntity.ok(ApiResponse.success(updateRestaurant));
     }
 
@@ -106,7 +106,7 @@ public class RestaurantController {
     @PatchMapping("/{restaurantsId}/close")
     public ResponseEntity<ApiResponse<?>> closeRestaurant(@PathVariable Long restaurantsId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userDetails.getUser();
-        restaurantService.closeRestaurant(restaurantsId, user);
+        restaurantService.closeRestaurant(restaurantsId, user.getId());
         return ResponseEntity.ok(ApiResponse.successWithNoContent());
     }
 }

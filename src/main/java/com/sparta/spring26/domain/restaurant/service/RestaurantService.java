@@ -27,8 +27,9 @@ public class RestaurantService {
     private final UserRepository userRepository;
 
     // 가게 생성
-    public RestaurantResponseDto createRestaurant(RestaurantRequestDto requestDto, User user) {
-        Long userId = user.getId();
+    public RestaurantResponseDto createRestaurant(RestaurantRequestDto requestDto, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (!user.getRole().equals(UserRole.OWNER)) {
             throw new CustomException(ErrorCode.NOT_OWNER);
@@ -46,8 +47,9 @@ public class RestaurantService {
     }
 
     // 가게 정보 수정
-    public RestaurantResponseDto updateRestaurantPartial(Long restaurantsId, RestaurantUpdateDto updateDto, User user) {
-        Long userId = user.getId();
+    public RestaurantResponseDto updateRestaurantPartial(Long restaurantsId, RestaurantUpdateDto updateDto, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Restaurant restaurant = restaurantRepository.findById(restaurantsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
@@ -67,6 +69,10 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
+        if (restaurant.getStatus() == RestaurantStatus.CLOSED){
+            throw new CustomException(ErrorCode.RESTAURANT_CLOSED);
+        }
+
         return RestaurantResponseDto.fromEntity(restaurant);
     }
     
@@ -80,7 +86,6 @@ public class RestaurantService {
             }else {
                 restaurantPage = restaurantRepository.findByNameContainingIgnoreCaseAndStatus(name, RestaurantStatus.OPEN, pageable);
             }
-            restaurantPage = restaurantRepository.findByNameContainingIgnoreCase(name, pageable);
         } else if (category != null) {
             restaurantPage = restaurantRepository.findByCategoryAndStatus(category, RestaurantStatus.OPEN, pageable);
         } else {
@@ -91,8 +96,10 @@ public class RestaurantService {
     }
 
     // 가게 폐업
-    public void closeRestaurant(Long restaurantsId, User user) {
-        Long userId = user.getId();
+    public void closeRestaurant(Long restaurantsId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         Restaurant restaurant = restaurantRepository.findById(restaurantsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 

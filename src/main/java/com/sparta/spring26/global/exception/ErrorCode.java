@@ -36,6 +36,9 @@ public enum ErrorCode {
     ALREADY_DEACTIVATED_USER(HttpStatus.CONFLICT, "이미 탈퇴된 회원입니다."),
     DUPLICATE_ADDRESS(HttpStatus.CONFLICT, "이미 등록된 주소입니다."),
 
+    // 410 Gone
+    RESTAURANT_CLOSED(HttpStatus.GONE, "해당 식당은 폐업했습니다."),
+
     // 500 INTERNAL_SERVER_ERROR: 서버 오류
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 오류가 발생했습니다."),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 연결에 실패했습니다.");

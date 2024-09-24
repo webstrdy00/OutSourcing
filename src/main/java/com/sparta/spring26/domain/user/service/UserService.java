@@ -90,11 +90,6 @@ public class UserService {
 
         return userId;
     }
-
-    // 기본 주소 설정
-    public void setPrimaryAddress(Long id, Long addressId) {
-
-    }
     @Transactional(readOnly = true)
     public Object getUserInfo(Long userId) {
         User user = userRepository.findById(userId)
