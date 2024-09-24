@@ -1,7 +1,7 @@
 package com.sparta.spring26.global.security;
 
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

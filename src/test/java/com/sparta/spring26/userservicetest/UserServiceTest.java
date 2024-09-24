@@ -4,7 +4,7 @@ import com.sparta.spring26.domain.user.dto.LoginRequestDto;
 import com.sparta.spring26.domain.user.dto.UserRequestDto;
 import com.sparta.spring26.domain.user.dto.UserResponseDto;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.domain.user.enums.UserStatus;
 import com.sparta.spring26.domain.user.repository.UserRepository;
 import com.sparta.spring26.domain.user.service.UserService;

@@ -5,10 +5,11 @@ import com.sparta.spring26.domain.restaurant.dto.request.RestaurantUpdateDto;
 import com.sparta.spring26.domain.restaurant.dto.response.RestaurantResponseDto;
 import com.sparta.spring26.domain.restaurant.dto.response.RestaurantResponseListDto;
 import com.sparta.spring26.domain.restaurant.entity.Restaurant;
+import com.sparta.spring26.domain.restaurant.enums.RestaurantCategory;
 import com.sparta.spring26.domain.restaurant.enums.RestaurantStatus;
 import com.sparta.spring26.domain.restaurant.repository.RestaurantRepository;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.domain.user.repository.UserRepository;
 import com.sparta.spring26.global.exception.CustomException;
 import com.sparta.spring26.global.exception.ErrorCode;
@@ -26,8 +27,9 @@ public class RestaurantService {
     private final UserRepository userRepository;
 
     // 가게 생성
-    public RestaurantResponseDto createRestaurant(RestaurantRequestDto requestDto, User user) {
-        Long userId = user.getId();
+    public RestaurantResponseDto createRestaurant(RestaurantRequestDto requestDto, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (!user.getRole().equals(UserRole.OWNER)) {
             throw new CustomException(ErrorCode.NOT_OWNER);
@@ -45,8 +47,9 @@ public class RestaurantService {
     }
 
     // 가게 정보 수정
-    public RestaurantResponseDto updateRestaurantPartial(Long restaurantsId, RestaurantUpdateDto updateDto, User user) {
-        Long userId = user.getId();
+    public RestaurantResponseDto updateRestaurantPartial(Long restaurantsId, RestaurantUpdateDto updateDto, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Restaurant restaurant = restaurantRepository.findById(restaurantsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
@@ -66,15 +69,26 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(restaurantsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 
+        if (restaurant.getStatus() == RestaurantStatus.CLOSED){
+            throw new CustomException(ErrorCode.RESTAURANT_CLOSED);
+        }
+
         return RestaurantResponseDto.fromEntity(restaurant);
     }
     
     // 가게 목록 조회
-    public Page<RestaurantResponseListDto> getRestaurantList(String name, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<RestaurantResponseListDto> getRestaurantList(String name, RestaurantCategory category, Pageable pageable) {
         Page<Restaurant> restaurantPage;
         if (name != null && !name.isEmpty()){
-            restaurantPage = restaurantRepository.findByNameContainingIgnoreCase(name, pageable);
-        }else {
+            if (category != null){
+                restaurantPage = restaurantRepository.findByNameContainingIgnoreCaseAndCategoryAndStatus(name, category, RestaurantStatus.OPEN, pageable);
+            }else {
+                restaurantPage = restaurantRepository.findByNameContainingIgnoreCaseAndStatus(name, RestaurantStatus.OPEN, pageable);
+            }
+        } else if (category != null) {
+            restaurantPage = restaurantRepository.findByCategoryAndStatus(category, RestaurantStatus.OPEN, pageable);
+        } else {
             restaurantPage = restaurantRepository.findAllByStatus(RestaurantStatus.OPEN, pageable);
         }
 
@@ -82,8 +96,10 @@ public class RestaurantService {
     }
 
     // 가게 폐업
-    public void closeRestaurant(Long restaurantsId, User user) {
-        Long userId = user.getId();
+    public void closeRestaurant(Long restaurantsId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         Restaurant restaurant = restaurantRepository.findById(restaurantsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESTAURANT_NOT_FOUND));
 

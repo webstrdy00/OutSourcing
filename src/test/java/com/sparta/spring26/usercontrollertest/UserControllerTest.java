@@ -5,7 +5,7 @@ import com.sparta.spring26.domain.user.dto.LoginRequestDto;
 import com.sparta.spring26.domain.user.dto.UserRequestDto;
 import com.sparta.spring26.domain.user.dto.UserResponseDto;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.domain.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

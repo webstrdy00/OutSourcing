@@ -63,7 +63,7 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests(authorizeHttpRequests ->
                 authorizeHttpRequests
-                        .requestMatchers("/api/users/login", "/api/users/signup").permitAll() // 로그인과 회원가입은 인증 없이 접근 가능
+                        .requestMatchers("/delivery/users/login", "/delivery/users/signup").permitAll() // 로그인과 회원가입은 인증 없이 접근 가능
                         .anyRequest().authenticated()     // 그 외 모든 요청 인증처리
         );
 

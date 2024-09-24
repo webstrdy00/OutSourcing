@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class UserRequestDto {
@@ -20,7 +22,7 @@ public class UserRequestDto {
 
     private String phone;
 
-    private UserRole userRole;
+    private List<String> addresses;
 
     private boolean owner = false;
     private String ownerToken = "";

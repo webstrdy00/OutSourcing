@@ -3,7 +3,6 @@ package com.sparta.spring26.global.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.spring26.domain.user.dto.LoginRequestDto;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
 import com.sparta.spring26.global.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +21,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        setFilterProcessesUrl("/api/users/login");
+        setFilterProcessesUrl("/delivery/users/login");
     }
 
     @Override

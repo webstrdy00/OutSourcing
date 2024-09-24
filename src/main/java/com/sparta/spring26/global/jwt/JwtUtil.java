@@ -3,7 +3,7 @@ package com.sparta.spring26.global.jwt;
 import com.sparta.spring26.domain.token.entity.RefreshToken;
 import com.sparta.spring26.domain.token.repository.RefreshTokenRepository;
 import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.entity.UserRole;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
