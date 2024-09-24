@@ -1,4 +1,4 @@
-package com.sparta.spring26.domain.user.entity;
+package com.sparta.spring26.domain.user.enums;
 
 public enum UserRole {
     USER(Authority.USER),  // 사용자 권한
@@ -17,7 +17,7 @@ public enum UserRole {
 
     public static class Authority {
         public static final String USER = "ROLE_USER";
-        private static final String OWNER = "ROLE_OWNER";
+        public static final String OWNER = "ROLE_OWNER";
         public static final String ADMIN = "ROLE_ADMIN";
     }
 }
