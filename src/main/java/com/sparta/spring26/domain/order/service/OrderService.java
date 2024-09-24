@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +51,7 @@ public class OrderService {
 
         // 가게 운영 시간 체크
         if (!isRestaurantOpen(restaurant.getOpenTime(), restaurant.getCloseTime())) {
-            throw new IllegalArgumentException(ErrorCode.MAX_RESTAURANT_LIMIT.getMessage());
+            throw new IllegalArgumentException(ExceptionCode.RESTAURANT_NOT_OPEN.getMessage());
         }
 
         // 주문 설정
