@@ -1,98 +1,73 @@
-package com.sparta.spring26.domain.cart.service;
-
-import com.sparta.spring26.domain.cart.dto.request.CartRequestDto;
-import com.sparta.spring26.domain.cart.dto.response.CartResponseDto;
-import com.sparta.spring26.domain.cart.entity.Cart;
-import com.sparta.spring26.domain.cart.repository.CartRepository;
-import com.sparta.spring26.domain.menu.entity.Menu;
-import com.sparta.spring26.domain.menu.repository.MenuRepository;
-import com.sparta.spring26.domain.restaurant.repository.RestaurantRepository;
-import com.sparta.spring26.domain.user.entity.User;
-import com.sparta.spring26.domain.user.repository.UserRepository;
-import com.sparta.spring26.global.exception.ExceptionCode;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-
-@Service
-@RequiredArgsConstructor
-public class CartService {
-
-    private final CartRepository cartRepository;
-    private final UserRepository userRepository;
-    private final MenuRepository menuRepository;
-    private final RestaurantRepository restaurantRepository;
-
-    @Transactional
-    public CartResponseDto addItem(CartRequestDto requestDto, User user) {
-
-        // 메뉴 조회
-        Menu menu = menuRepository.findById(requestDto.getMenuId())
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.MENU_NOT_FOUND.getMessage()));
-
-        // 유저의 장바구니 조회 또는 새로 생성
-        Cart cart = cartRepository.findByUser(user.getId())
-                .orElseGet(() -> createNewCart(user));
-
-        // 다른 가게 메뉴가 추가될 경우 초기화
-        if (cart.getRestaurant() != null && !cart.getRestaurant().equals(menu.getRestaurant())) {
-            cart.setRestaurant(menu.getRestaurant());
-            cart.getItems().clear();
-        } else if (cart.getRestaurant() == null) {
-            cart.setRestaurant(menu.getRestaurant());
-        }
-
-        // 메뉴 추가
-        cart.addItem(menu, requestDto.getQuantity());
-
-        // 장바구니 저장
-        cartRepository.save(cart);
-
-        // 응답 DTO 반환
-        return new CartResponseDto(
-                cart.getRestaurant().getId(),
-                cart.getItems(),
-                cart.getTotalPrice()
-        );
-    }
-
-//    @Transactional(readOnly = true)
-//    public CartResponseDto getCart(User user) {
-//        // 유저의 장바구니 조회
-//        Cart cart = cartRepository.findByUser(user)
-//                .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.CART_NOT_FOUND.getMessage()));
+//import com.sparta.spring26.domain.cart.dto.CartListDto;
+//import jakarta.servlet.http.HttpSession;
+//import org.springframework.stereotype.Service;
 //
-//        // 장바구니 만료 체크
-//        if (cart.isCartExpired()) {
-//            cartRepository.delete(cart); // 만료된 경우 장바구니 삭제
-//            throw new IllegalArgumentException(ExceptionCode.CART_EXPIRED.getMessage()); // 예외 처리
+//import java.util.ArrayList;
+//
+//@Service
+//public class CartService {
+//
+//    public CartListDto addCart(CartDto cartDto, long storeId, String storeName, HttpSession session) {
+//        CartListDto cartListDto = (CartListDto) session.getAttribute("cartList");
+//
+//        cartDto.totalPriceCalc();
+//        // Session에 저장된 장바구니 목록이 없을 시
+//        if (cartListDto == null) {
+//            List<CartDto> newCart = new ArrayList<>();
+//            newCart.add(cartDto);
+//            cartListDto = new CartListDto(storeId, storeName, cartDto.getTotalPrice(), newCart);
+//        } else {
+//            List<CartDto> prevCart = cartListDto.getCartDto();
+//            int prevCartTotal = cartListDto.getCartTotal();
+//            cartListDto.setCartTotal(prevCartTotal + cartDto.getTotalPrice());
+//
+//            // 이미 장바구니에 추가된 메뉴일 때
+//            if (prevCart.contains(cartDto)) {
+//                int cartIndex = prevCart.indexOf(cartDto);
+//                int amount = cartDto.getAmount();
+//
+//                CartDto newCart = prevCart.get(cartIndex);
+//                int newAmount = newCart.getAmount() + amount;
+//
+//                newCart.setAmount(newAmount);
+//                newCart.totalPriceCalc();
+//                prevCart.set(cartIndex, newCart);
+//            } else { // 장바구니에 추가되어 있지 않은 메뉴일 때
+//                prevCart.add(cartDto);
+//            }
 //        }
 //
-//        // 장바구니 응답 DTO 반환
-//        return new CartResponseDto(
-//                cart.getRestaurant(),
-//                cart.getItems(),
-//                cart.getTotalPrice()
-//        );
+//        session.setAttribute("cartList", cartListDto);
+//        return cartListDto;
 //    }
 //
-//    @Transactional
-//    public void deleteCart(User user) {
-//        // 유저의 장바구니 조회
-//        Cart cart = cartRepository.findByUser(user)
-//                .orElseThrow(() -> new IllegalArgumentException(ExceptionCode.CART_NOT_FOUND.getMessage()));
-//
-//        // 장바구니 삭제
-//        cartRepository.delete(cart);
+//    public CartListDto getCartList(HttpSession session) {
+//        return (CartListDto) session.getAttribute("cartList");
 //    }
 //
-//    // 새로운 장바구니 생성 메서드
-//    private Cart createNewCart(User user) {
-//        Cart newCart = new Cart();
-//        newCart.setUser(user);
-//        newCart.setCreatedAt(LocalDateTime.now());
-//        return newCart;
+//    public void deleteAllCart(HttpSession session) {
+//        session.removeAttribute("cartList");
 //    }
-}
+//
+//    public CartListDto deleteOneCart(int index, HttpSession session) {
+//        CartListDto cartList = (CartListDto) session.getAttribute("cartList");
+//        if (cartList == null) {
+//            return null;
+//        }
+//
+//        int cartTotal = cartList.getCartTotal();
+//        List<CartDto> cart = cartList.getCartDto();
+//        int removeCartPrice = cart.get(index).getTotalPrice();
+//
+//        cart.remove(index);
+//
+//        if (cart.size() == 0) {
+//            session.removeAttribute("cartList");
+//            return null;
+//        }
+//
+//        cartTotal -= removeCartPrice;
+//        cartList.setCartTotal(cartTotal);
+//        return cartList;
+//    }
+//}

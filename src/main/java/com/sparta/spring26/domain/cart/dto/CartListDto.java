@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemDto {
+public class CartListDto {
 
     private Long menuId;          // 메뉴 ID
     private String menuName;      // 메뉴 이름

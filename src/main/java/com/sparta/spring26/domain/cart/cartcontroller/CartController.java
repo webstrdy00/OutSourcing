@@ -1,39 +1,38 @@
-package com.sparta.spring26.domain.cart.cartcontroller;
-
-import com.sparta.spring26.domain.cart.dto.request.CartRequestDto;
-import com.sparta.spring26.domain.cart.dto.response.CartResponseDto;
-import com.sparta.spring26.domain.cart.service.CartService;
-import com.sparta.spring26.global.security.UserDetailsImpl;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-@RestController
-@RequestMapping("/delivery/cart")
-@RequiredArgsConstructor
-public class CartController {
-
-    private final CartService cartService;
-
-    @PostMapping
-    public ResponseEntity<CartResponseDto> addItem (
-            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestBody CartRequestDto cartRequestDto) {
-        CartResponseDto cartResponseDto = cartService.addItem(cartRequestDto, userDetails.getUser());
-        return ResponseEntity.ok(cartResponseDto);
-    }
-
-    @GetMapping
-    public ResponseEntity<CartResponseDto> getCart(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        CartResponseDto cartResponseDto = cartService.getCart(userDetails.getUser());
-        return ResponseEntity.ok(cartResponseDto);
-    }
-
-    @DeleteMapping("/{cartId}")
-    public ResponseEntity<?> deleteCart(
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        cartService.deleteCart(userDetails.getUser());
-        return ResponseEntity.noContent().build();
-    }
-}
+//package com.sparta.spring26.domain.cart.cartcontroller;
+//
+//import com.sparta.spring26.domain.cart.dto.CartListDto;
+//import jakarta.servlet.http.HttpSession;
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.web.bind.annotation.*;
+//
+//@RestController
+//@RequestMapping("/delivery/cart")
+//@RequiredArgsConstructor
+//public class CartController {
+//
+//    private final CartService cartService;
+//
+//    // 장바구니 추가
+//    @PostMapping
+//    public CartListDto addCart(CartDto cartDto, long storeId, String storeName, int deliveryTip, HttpSession session) {
+//        return cartService.addCart(cartDto, storeId, storeName, deliveryTip, session);
+//    }
+//
+//    // 장바구니 목록 조회
+//    @GetMapping
+//    public CartListDto getCartList(HttpSession session) {
+//        return cartService.getCartList(session);
+//    }
+//
+//    // 장바구니 전체 삭제
+//    @DeleteMapping
+//    public void deleteAllCart(HttpSession session) {
+//        cartService.deleteAllCart(session);
+//    }
+//
+//    // 장바구니 한 개 삭제
+//    @DeleteMapping("/{index}")
+//    public CartListDto deleteOneCart(@PathVariable int index, HttpSession session) {
+//        return cartService.deleteOneCart(index, session);
+//    }
+//}

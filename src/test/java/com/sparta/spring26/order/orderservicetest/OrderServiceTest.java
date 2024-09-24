@@ -75,58 +75,59 @@ class OrderServiceTest {
         ReflectionTestUtils.setField(menu, "restaurant", restaurant);
     }
 
-//    @Test
-//    void 주문_등록_성공() {
-//        // Given
-//        User user = new User();
-//        ReflectionTestUtils.setField(user, "id", 1L);
-//        ReflectionTestUtils.setField(user, "role", UserRole.USER);
-//
-//        // 식당 정보 생성
-//        LocalTime openTime = LocalTime.of(9, 0);  // 9:00 AM
-//        LocalTime closeTime = LocalTime.of(22, 0); // 10:00 PM
-//        Restaurant restaurant = new Restaurant();
-//        ReflectionTestUtils.setField(restaurant, "id", 3L);
-//        ReflectionTestUtils.setField(restaurant, "name", "Test Restaurant");
-//        ReflectionTestUtils.setField(restaurant, "minDeliveryPrice", 10000);
-//        ReflectionTestUtils.setField(restaurant, "openTime", openTime);
-//        ReflectionTestUtils.setField(restaurant, "closeTime", closeTime);
-//
-//        when(restaurantRepository.findById(3L)).thenReturn(Optional.of(restaurant));
-//
-//        Menu menu = new Menu();
-//        ReflectionTestUtils.setField(menu, "id", 1L);
-//        ReflectionTestUtils.setField(menu, "price", 12000);
-//        when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
-//
-//        OrderCreateRequestDto requestDto = new OrderCreateRequestDto(3L, 1L, 1); // restaurantId는 3L
-//
-//        // 주문 시간 설정
-//        LocalDateTime orderTime = LocalDateTime.of(2024, 9, 24, 10, 0); // 오전 10시
-//        OrderResponseDto expectedResponse = new OrderResponseDto(
-//                3L,
-//                List.of(1L),
-//                restaurant.getId(),
-//                restaurant.getName(),
-//                menu.getPrice(),
-//                restaurant.getAddress(),
-//                OrderStatus.ORDER_ACCEPTED,
-//                orderTime,
-//                orderTime
-//        );
-//
-//        // When
-//        OrderResponseDto responseDto = orderService.createOrder(user, requestDto);
-//
-//        // Then
-//        assertNotNull(responseDto);
-//        assertEquals(expectedResponse.getRestaurantId(), responseDto.getRestaurantId());
-//        assertEquals(expectedResponse.getTotalPrice(), responseDto.getTotalPrice());
-//        assertEquals(expectedResponse.getStatus(), responseDto.getStatus());
-//        assertEquals(expectedResponse.getCreatedAt(), responseDto.getCreatedAt());
-//        assertEquals(expectedResponse.getModifiedAt(), responseDto.getModifiedAt());
-//        verify(orderRepository, times(1)).save(any(Order.class));
-//    }
+    @Test
+    void 주문_등록_성공() {
+        // Given
+        User user = new User();
+        ReflectionTestUtils.setField(user, "id", 1L);
+        ReflectionTestUtils.setField(user, "role", UserRole.USER);
+
+        // 식당 정보 생성
+        LocalTime openTime = LocalTime.of(9, 0);  // 9:00 AM
+        LocalTime closeTime = LocalTime.of(22, 0); // 10:00 PM
+        Restaurant restaurant = new Restaurant();
+        ReflectionTestUtils.setField(restaurant, "id", 3L);
+        ReflectionTestUtils.setField(restaurant, "name", "Test Restaurant");
+        ReflectionTestUtils.setField(restaurant, "minDeliveryPrice", 10000);
+        ReflectionTestUtils.setField(restaurant, "openTime", openTime);
+        ReflectionTestUtils.setField(restaurant, "closeTime", closeTime);
+
+        when(restaurantRepository.findById(3L)).thenReturn(Optional.of(restaurant));
+
+        Menu menu = new Menu();
+        ReflectionTestUtils.setField(menu, "id", 1L);
+        ReflectionTestUtils.setField(menu, "price", 12000);
+        when(menuRepository.findById(1L)).thenReturn(Optional.of(menu));
+
+        // 주문 시간 설정(운영시간 내)
+        LocalDateTime orderTime = LocalDateTime.of(2024, 9, 24, 10, 0); // 오전 10시
+        OrderCreateRequestDto requestDto = new OrderCreateRequestDto(3L, 1L, 1); // restaurantId는 3L
+
+
+        // Mocking the order saving
+        Order order = new Order();
+        ReflectionTestUtils.setField(order, "id", 1L); // 가상의 ID 설정
+        ReflectionTestUtils.setField(order, "user", user);
+        ReflectionTestUtils.setField(order, "restaurant", restaurant);
+        ReflectionTestUtils.setField(order, "menu", menu);
+        ReflectionTestUtils.setField(order, "quantity", 1);
+        ReflectionTestUtils.setField(order, "totalPrice", menu.getPrice() * 1);
+        ReflectionTestUtils.setField(order, "status", OrderStatus.ORDER_ACCEPTED);
+
+
+        when(orderRepository.save(any(Order.class))).thenReturn(order);
+
+        // When
+        OrderResponseDto responseDto = orderService.createOrder(user, requestDto);
+
+        // Then
+        assertEquals(1L, responseDto.getId()); // 저장된 주문 ID
+        assertEquals(3L, responseDto.getRestaurantId());
+        assertEquals(12000, responseDto.getTotalPrice());
+        assertEquals(OrderStatus.ORDER_ACCEPTED, responseDto.getStatus());
+        assertNotNull(responseDto);
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
 
     @Test
     void 주문_등록_실패_메뉴_미존재() {
