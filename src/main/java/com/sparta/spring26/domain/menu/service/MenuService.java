@@ -63,6 +63,7 @@ public class MenuService {
             throw new IllegalArgumentException(ExceptionCode.RESTAURANT_OWNER_MISMATCH.getMessage());
         }
 
+        // 수정
         menu.update(name, price, category, popularity, status);
     }
 
