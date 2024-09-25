@@ -41,6 +41,9 @@ Order ----> Review
 User -----< Review
 ```
 
+![26 erd](https://github.com/user-attachments/assets/a943229c-d950-4793-be2c-13a33b4b8aad)
+
+
 - **User와 Restaurant**: 하나의 유저는 여러 개의 레스토랑을 소유할 수 있습니다 (1:N 관계)
 - **User와 Order**: 한 명의 유저는 여러 개의 주문을 할 수 있습니다 (1:N 관계)
 - **Restaurant과 Order**: 하나의 레스토랑은 여러 개의 주문을 받을 수 있습니다 (1:N 관계)
