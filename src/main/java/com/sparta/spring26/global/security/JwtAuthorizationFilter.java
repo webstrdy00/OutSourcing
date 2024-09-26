@@ -1,7 +1,8 @@
 package com.sparta.spring26.global.security;
 
 import com.sparta.spring26.domain.token.entity.RefreshToken;
-import com.sparta.spring26.domain.token.repository.RefreshTokenRepository;
+import com.sparta.spring26.domain.token.repository.RefreshTokenRedisRepository;
+import com.sparta.spring26.domain.user.enums.UserRole;
 import com.sparta.spring26.global.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,12 +25,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, RefreshTokenRepository refreshTokenRepository) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService, RefreshTokenRedisRepository refreshTokenRedisRepository) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.refreshTokenRedisRepository = refreshTokenRedisRepository;
     }
 
     @Override
@@ -44,25 +45,25 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String accessToken = jwtUtil.getJwtFromHeader(req);
         log.info("Extracted accessToken from header: {}", accessToken);
         Optional<String> refreshTokenOpt = jwtUtil.getRefreshTokenFromCooke(req);
-        String refreshToken = refreshTokenOpt.get();
-        log.info("Extracted accessToken from header: {}", refreshToken);
 
         if (StringUtils.hasText(accessToken)) {
             if (jwtUtil.validateToken(accessToken)) {
                 setAuthentication(jwtUtil.getUserInfoFromToken(accessToken).getSubject());
-            } else if (StringUtils.hasText(refreshToken) && jwtUtil.validateRefreshToken(refreshToken)) {
+            } else if (refreshTokenOpt.isPresent() && jwtUtil.validateRefreshToken(refreshTokenOpt.get())) {
                 // AccessToken 이 만료되었지만 RefreshToken 이 유효한 경우
-                Optional<RefreshToken> tokenOpt = refreshTokenRepository.findByToken(refreshToken);
-                if (tokenOpt.isPresent()) {
-                    RefreshToken token = tokenOpt.get();
-                    String email = token.getUser().getEmail();
-                    UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(email);
+                String refreshToken = refreshTokenOpt.get();
+                String email = jwtUtil.getUserInfoFromToken(refreshToken).getSubject();
+                Optional<RefreshToken> tokenOpt = refreshTokenRedisRepository.findById(email);
 
-                    String newAccessToken = jwtUtil.createAccessToken(email, userDetails.getUser().getRole());
+                if (tokenOpt.isPresent() && tokenOpt.get().getToken().equals(refreshToken)) {
+                    UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(email);
+                    UserRole role = userDetails.getUser().getRole();
+
+                    String newAccessToken = jwtUtil.createAccessToken(email, role);
                     res.addHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + newAccessToken);
 
-                    jwtUtil.updateRefreshToken(token);
-                    jwtUtil.setRefreshTokenCookie(res, token.getToken());
+                    RefreshToken newRefreshToken = jwtUtil.updateRefreshToken(email, role);
+                    jwtUtil.setRefreshTokenCookie(res, newRefreshToken);
 
                     setAuthentication(email);
                 }

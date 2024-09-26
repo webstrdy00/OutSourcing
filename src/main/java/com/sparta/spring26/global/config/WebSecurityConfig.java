@@ -1,6 +1,6 @@
 package com.sparta.spring26.global.config;
 
-import com.sparta.spring26.domain.token.repository.RefreshTokenRepository;
+import com.sparta.spring26.domain.token.repository.RefreshTokenRedisRepository;
 import com.sparta.spring26.global.jwt.JwtUtil;
 import com.sparta.spring26.global.security.JwtAuthenticationFilter;
 import com.sparta.spring26.global.security.JwtAuthorizationFilter;
@@ -27,7 +27,7 @@ public class WebSecurityConfig {
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,7 +48,7 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRepository);
+        return new JwtAuthorizationFilter(jwtUtil, userDetailsService, refreshTokenRedisRepository);
     }
 
     @Bean
