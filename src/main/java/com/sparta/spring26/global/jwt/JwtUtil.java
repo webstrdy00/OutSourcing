@@ -1,8 +1,7 @@
 package com.sparta.spring26.global.jwt;
 
 import com.sparta.spring26.domain.token.entity.RefreshToken;
-import com.sparta.spring26.domain.token.repository.RefreshTokenRepository;
-import com.sparta.spring26.domain.user.entity.User;
+import com.sparta.spring26.domain.token.repository.RefreshTokenRedisRepository;
 import com.sparta.spring26.domain.user.enums.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.security.Key;
-import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
@@ -39,7 +37,7 @@ public class JwtUtil {
     // refresh 토큰 만료시간
     private final long REFRESH_TOKEN_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
@@ -58,23 +56,20 @@ public class JwtUtil {
         return createToken(email, role, ACCESS_TOKEN_TIME);
     }
 
-    // Refresh 토큰 생성 및 설정
-    public void createAndSetRefreshToken(HttpServletResponse response, User user) {
-        String token = createToken(user.getEmail(), user.getRole(), REFRESH_TOKEN_TIME);
-        Instant expiryDate = Instant.now().plusMillis(REFRESH_TOKEN_TIME);
-
-        RefreshToken refreshToken = new RefreshToken(user, token, expiryDate);
-        refreshTokenRepository.save(refreshToken);
-
-        setRefreshTokenCookie(response, token);
+    // Refresh 토큰 생성
+    public RefreshToken createRefreshToken(String email, UserRole role){
+        String token = createToken(email, role, REFRESH_TOKEN_TIME);
+        RefreshToken refreshToken = new RefreshToken(email, token, REFRESH_TOKEN_TIME);
+        log.info("RefreshToken created and saved for user: {}", email);
+        return refreshTokenRedisRepository.save(refreshToken);
     }
-
-    // Refresh 토큰 쿠키에 저장
-    public void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
-        Cookie cookie = new Cookie(REFRESH_HEADER, refreshToken);
-//        cookie.setSecure(true); // HTTPS에서만 사용
+    
+    // Refresh 토큰 쿠기에 설정
+    public void setRefreshTokenCookie(HttpServletResponse response, RefreshToken refreshToken){
+        Cookie cookie = new Cookie(REFRESH_HEADER, refreshToken.getToken());
         cookie.setPath("/");
-        cookie.setMaxAge(7 * 24 * 60 * 60); // 7일
+        cookie.setMaxAge((int) (REFRESH_TOKEN_TIME / 1000)); // 초 단위로 변환
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
 
@@ -92,17 +87,17 @@ public class JwtUtil {
     }
 
     // Refresh 토큰 업데이트 하기
-    public void updateRefreshToken(RefreshToken refreshToken) {
-        String token = createToken(refreshToken.getUser().getEmail(), refreshToken.getUser().getRole(), REFRESH_TOKEN_TIME);
-        Instant expiryDate = Instant.now().plusMillis(REFRESH_TOKEN_TIME);
-
-        refreshToken.updateToken(token, expiryDate);
-        refreshTokenRepository.save(refreshToken);
+    public RefreshToken updateRefreshToken(String email, UserRole role) {
+        String newToken = createToken(email, role, REFRESH_TOKEN_TIME);
+        RefreshToken refreshToken = refreshTokenRedisRepository.findById(email)
+                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
+        refreshToken.updateToken(newToken, REFRESH_TOKEN_TIME);
+        return refreshTokenRedisRepository.save(refreshToken);
     }
 
     // Refresh 토큰 삭제하기
-    public void deleteRefreshToken(RefreshToken refreshToken) {
-        refreshTokenRepository.delete(refreshToken);
+    public void deleteRefreshToken(String userEmail) {
+        refreshTokenRedisRepository.deleteById(userEmail);
     }
 
     // 토큰 생성

@@ -1,6 +1,7 @@
 package com.sparta.spring26.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.spring26.domain.token.entity.RefreshToken;
 import com.sparta.spring26.domain.user.dto.LoginRequestDto;
 import com.sparta.spring26.domain.user.entity.User;
 import com.sparta.spring26.global.jwt.JwtUtil;
@@ -51,8 +52,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, JwtUtil.BEARER_PREFIX + accessToken);
 
 
-        // RefreshToken 생성 및 쿠키에 설정
-        jwtUtil.createAndSetRefreshToken(response, user);
+        // RefreshToken 생성
+        RefreshToken refreshToken = jwtUtil.createRefreshToken(user.getEmail(), user.getRole());
+
+        // RefreshToken을 쿠키에 설정
+        jwtUtil.setRefreshTokenCookie(response, refreshToken);
 
         log.info("로그인 성공: {}", user.getEmail());
     }
