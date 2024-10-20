@@ -37,7 +37,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         // 로그인과 회원가입 요청은 이 필터를 건너뜁니다.
         String path = req.getRequestURI();
-        if (path.equals("/delivery/users/login") || path.equals("/delivery/users/signup")) {
+        if (path.equals("/delivery/users/login") || path.equals("/delivery/users/signup") || path.equals("/delivery/oauth/kakao") || path.equals("/delivery/oauth/kakao/login")) {
             filterChain.doFilter(req, res);
             return;
         }

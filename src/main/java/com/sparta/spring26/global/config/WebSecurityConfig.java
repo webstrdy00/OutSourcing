@@ -63,6 +63,7 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests(authorizeHttpRequests ->
                 authorizeHttpRequests
+                        .requestMatchers("/delivery/oauth/**").permitAll() // 카카오 로그인은 인증없이 통과
                         .requestMatchers("/delivery/users/login", "/delivery/users/signup").permitAll() // 로그인과 회원가입은 인증 없이 접근 가능
                         .anyRequest().authenticated()     // 그 외 모든 요청 인증처리
         );

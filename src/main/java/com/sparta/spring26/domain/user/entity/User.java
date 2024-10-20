@@ -28,10 +28,10 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = true, length = 30)
     private String phone;
 
     @Enumerated(value = EnumType.STRING)
@@ -41,6 +41,13 @@ public class User extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
+
+    // OAuth2 관련 필드 추가
+    @Column(nullable = true)
+    private String provider; // 예: "kakao", "google" 등
+
+    @Column(nullable = true)
+    private String providerId; // OAuth2 제공자의 고유 ID
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAddress> addressList = new ArrayList<>();
@@ -53,6 +60,16 @@ public class User extends BaseTimeEntity {
         this.name = requestDto.getName();
         this.phone = requestDto.getPhone();
         this.password = password;
+        this.role = role;
+        this.status = UserStatus.ACTIVE;
+    }
+
+    // OAuth2 사용자를 위한 새 생성자
+    public User(String name, String email, String provider, String providerId, UserRole role) {
+        this.name = name;
+        this.email = email;
+        this.provider = provider;
+        this.providerId = providerId;
         this.role = role;
         this.status = UserStatus.ACTIVE;
     }
@@ -94,5 +111,11 @@ public class User extends BaseTimeEntity {
                 .filter(UserAddress::isPrimary)
                 .findFirst()
                 .orElse(null);
+    }
+
+    // OAuth2 사용자 정보 업데이트 메서드
+    public User update(String name) {
+        this.name = name;
+        return this;
     }
 }
